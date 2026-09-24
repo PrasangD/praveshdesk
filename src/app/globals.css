@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+/*
+  PraveshDesk tokens — taken from the thing we replace: the enquiry register.
+  Blue ruled paper, a red margin line, ball-pen ink, and a green "admitted" stamp.
+*/
+@theme {
+  --color-paper: #fbfcfe;
+  --color-register: #f1f5fc;
+  --color-rule: #cbd7ef;
+  --color-ink: #1d2e6e;
+  --color-ink-deep: #121d4a;
+  --color-graphite: #3d4460;
+  --color-muted: #646b85;
+  --color-margin: #c7303b;
+  --color-stamp: #1c7a4d;
+  --color-highlight: #ffe6a0;
+
+  --font-sans: "Mukta", ui-sans-serif, system-ui, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --font-hand: "Kalam", "Comic Neue", "Segoe Print", cursive;
+
+  --line-register: 2.25rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-graphite);
+    font-family: var(--font-sans);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    color: var(--color-ink-deep);
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  a { text-underline-offset: 0.18em; }
+  :focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .container-page {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 72rem;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .container-page { padding-inline: 2rem; }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.375rem;
+    font-weight: 700;
+    font-size: 1.0625rem;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background-color 150ms, border-color 150ms, color 150ms;
+  }
+  .btn-primary { background: var(--color-ink); color: #fff; }
+  .btn-primary:hover { background: var(--color-ink-deep); }
+  .btn-secondary {
+    background: #fff;
+    color: var(--color-ink);
+    border: 1.5px solid color-mix(in oklab, var(--color-ink) 35%, transparent);
+  }
+  .btn-secondary:hover { border-color: var(--color-ink); }
+  .btn-whatsapp { background: #1c7a4d; color: #fff; }
+  .btn-whatsapp:hover { background: #155f3c; }
+
+  /* The ruled register page */
+  .ruled {
+    background-color: var(--color-register);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(var(--line-register) - 1px),
+      var(--color-rule) calc(var(--line-register) - 1px),
+      var(--color-rule) var(--line-register)
+    );
+  }
+  .margin-line { position: relative; }
+  .margin-line::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 3.5rem;
+    border-left: 2px solid var(--color-margin);
+    opacity: 0.8;
+  }
+
+  .stamp {
+    display: inline-block;
+    padding: 0.05rem 0.5rem;
+    border: 2px solid currentColor;
+    border-radius: 3px;
+    color: var(--color-stamp);
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transform: rotate(-7deg);
+    opacity: 0.9;
+  }
+
+  .field-label { display: block; font-weight: 600; color: var(--color-ink-deep); font-size: 1rem; margin-bottom: 0.25rem; }
+  .field-hint { font-size: 0.9rem; color: var(--color-muted); }
+  .field {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid var(--color-rule);
+    border-radius: 0.375rem;
+    background: #fff;
+    color: var(--color-ink-deep);
+    font-size: 1.0625rem;
+  }
+  .field:focus { border-color: var(--color-ink); outline: none; box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-ink) 18%, transparent); }
+  .field[aria-invalid="true"] { border-color: var(--color-margin); }
+  .field-error { color: var(--color-margin); font-size: 0.95rem; margin-top: 0.25rem; }
+
+  .prose-legal h2 { font-size: 1.375rem; font-weight: 700; margin-top: 2.25rem; margin-bottom: 0.5rem; }
+  .prose-legal h3 { font-size: 1.125rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.25rem; }
+  .prose-legal p, .prose-legal li { max-width: 70ch; }
+  .prose-legal p + p { margin-top: 0.75rem; }
+  .prose-legal ul { list-style: disc; padding-left: 1.25rem; margin-top: 0.5rem; }
+  .prose-legal li + li { margin-top: 0.25rem; }
+  .prose-legal a { color: var(--color-ink); text-decoration: underline; }
+}
