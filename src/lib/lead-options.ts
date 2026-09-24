@@ -32,13 +32,30 @@ export const METHOD_OPTIONS = [
   { value: "other", label: "Something else" },
 ] as const;
 
-export const LEAD_SOURCES = ["home", "demo", "contact", "calculator", "city", "pricing"] as const;
+// What the institute wants built. Values match the group ids in lib/automations.ts,
+// plus the two answers that are not a group: "something else" and "not sure yet".
+export const INTEREST_OPTIONS = [
+  { value: "admissions", label: "Admission enquiries and follow-up" },
+  { value: "fees", label: "Fees and collections" },
+  { value: "attendance", label: "Attendance and batches" },
+  { value: "tests", label: "Tests, marks and report cards" },
+  { value: "parents", label: "Parent communication" },
+  { value: "staff", label: "Staff and daily admin" },
+  { value: "documents", label: "Paperwork and documents" },
+  { value: "owner", label: "Reports for the owner" },
+  { value: "growth", label: "Getting more students" },
+  { value: "custom", label: "Something else — I'll describe it below" },
+  { value: "not-sure", label: "Not sure yet, I want advice" },
+] as const;
+
+export const LEAD_SOURCES = ["home", "demo", "contact", "calculator", "city", "pricing", "automations"] as const;
 
 type Values<T extends readonly { value: string }[]> = T[number]["value"];
 export type Role = Values<typeof ROLE_OPTIONS>;
 export type StudentsRange = Values<typeof STUDENT_OPTIONS>;
 export type EnquiryRange = Values<typeof ENQUIRY_OPTIONS>;
 export type Method = Values<typeof METHOD_OPTIONS>;
+export type Interest = Values<typeof INTEREST_OPTIONS>;
 export type LeadSource = (typeof LEAD_SOURCES)[number];
 
 export function valuesOf<T extends readonly { value: string }[]>(opts: T) {

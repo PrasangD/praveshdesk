@@ -59,3 +59,38 @@ export const pricingFaqs: Faq[] = [
     a: `No. It is month to month. Stop with ${site.cancellationNotice} notice.`,
   },
 ];
+
+export const automationFaqs: Faq[] = [
+  {
+    q: "We do something odd that no software handles. Can you still automate it?",
+    a: "Usually, yes — that is the point of building it for you rather than selling you a product. Show us the job once. If it can be written down as rules, it can be built.",
+  },
+  {
+    q: "Do we have to take the admission system to get anything else?",
+    a: "No. Most institutes start with admissions because that is where the money leaks, but we will build only the fee tracker, or only the report cards, if that is your real problem.",
+  },
+  {
+    q: "How long does a custom automation take?",
+    a: "A small one is usually ready within a week of the quote being agreed. A bigger module that touches fees or results takes two to four weeks. You get a date with the quote.",
+  },
+  {
+    q: "What does a custom build cost?",
+    a: "A fixed price, quoted in writing before anything is built, based on how long it takes. It does not change once we start. If we think the job is not worth automating, we will say so and charge nothing.",
+  },
+  {
+    q: "What happens to it if we stop working with you?",
+    a: `It keeps running. Everything sits in your institute's own Google account, so the sheets, forms and documents stay yours. Tell us ${site.cancellationNotice} before your next billing date and we remove our access.`,
+  },
+  {
+    q: "Can it work with the software we already use?",
+    a: "Often, yes, if that software can export a file or has a way to connect. We will check before quoting rather than promise it in advance. We do not replace your accounting or teaching software.",
+  },
+  {
+    q: "Will our staff have to learn something complicated?",
+    a: "No. Almost everything ends up as a form to fill, a list to open, or an email that arrives. If your staff need a manual to use it, we built it wrong.",
+  },
+  {
+    q: "Is our students' and parents' data safe?",
+    a: "It stays in your Google account, not ours. We get access to set it up and maintain it, you can remove that access at any time, and we never move your data to another institute or use it for anything else.",
+  },
+];

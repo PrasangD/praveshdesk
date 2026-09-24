@@ -1,6 +1,10 @@
 /**
  * PraveshDesk — website lead inbox and automation (Google Sheets + Apps Script)
  *
+ * Note: leads now carry "Wants automated" (the interest field on the website form),
+ * so an enquiry about fees, attendance or a job of their own arrives already sorted.
+ * The allowed values are the group ids in src/lib/automations.ts, plus custom/not-sure.
+ *
  * The website is fully static, so the browser posts each form straight to this web app.
  * This script is therefore the only "server": it validates, filters spam and scores
  * every lead before saving it.
@@ -44,7 +48,7 @@ const CITIES = {
 
 const HEADERS = [
   'Received at', 'Lead ID', 'Status', 'Grade', 'Score', 'Name', 'Role', 'Institute', 'Area',
-  'Phone', 'Email', 'Students', 'Enquiries / month', 'Current method', 'Best time', 'Message',
+  'Phone', 'Email', 'Students', 'Enquiries / month', 'Current method', 'Wants automated', 'Best time', 'Message',
   'Score reasons', 'Calculator', 'Form', 'Page', 'UTM source', 'UTM medium', 'UTM campaign',
   'Referrer', 'Next follow-up', 'Notes', 'First contacted at', 'Reminder sent', 'Duplicate of',
 ];
@@ -57,8 +61,14 @@ const LABELS = {
   students: { 'not-sure': 'Not said', 'under-100': '<100', '100-300': '100–300', '300-600': '300–600', '600-plus': '600+' },
   enquiries: { 'not-sure': 'Not sure', 'under-20': '<20', '20-50': '20–50', '50-150': '50–150', '150-plus': '150+' },
   method: { '': '', register: 'Paper register', excel: 'Excel/Sheets', whatsapp: 'WhatsApp chats', software: 'Software/app', other: 'Other' },
+  interest: {
+    admissions: 'Admissions & follow-up', fees: 'Fees & collections', attendance: 'Attendance & batches',
+    tests: 'Tests, marks & report cards', parents: 'Parent communication', staff: 'Staff & daily admin',
+    documents: 'Paperwork & documents', owner: 'Owner reports', growth: 'Getting more students',
+    custom: 'SOMETHING ELSE — read the message', 'not-sure': 'Not sure yet',
+  },
 };
-const SOURCES = ['home', 'demo', 'contact', 'calculator', 'city', 'pricing'];
+const SOURCES = ['home', 'demo', 'contact', 'calculator', 'city', 'pricing', 'automations'];
 
 // ---------------------------------------------------------------------------
 // One-time setup: run this from the editor.
@@ -160,6 +170,7 @@ function validate_(b) {
     students: pick(b.students, Object.keys(LABELS.students), 'not-sure'),
     enquiries: pick(b.enquiries, Object.keys(LABELS.enquiries), 'not-sure'),
     method: pick(b.method, Object.keys(LABELS.method), ''),
+    interest: pick(b.interest, Object.keys(LABELS.interest), 'not-sure'),
     preferredTime: str_(b.preferredTime, 80),
     message: str_(b.message, 1000),
     source: pick(b.source, SOURCES, 'home'),
@@ -223,6 +234,11 @@ function score_(lead) {
 
   if (lead.city !== 'other') add(15, 'inside service area');
   else add(-5, 'outside service area');
+
+  if (lead.interest === 'custom') add(10, 'named a job of their own to automate');
+  else if (lead.interest && lead.interest !== 'not-sure' && lead.interest !== 'admissions') {
+    add(5, 'wants more than admissions');
+  }
 
   if (lead.message.length >= 20) add(5, 'wrote a message');
   if (lead.calculator) add(5, 'used the calculator');
@@ -368,6 +384,7 @@ function rowFromLead_(lead, duplicateOf) {
     'Students': LABELS.students[lead.students] || lead.students,
     'Enquiries / month': LABELS.enquiries[lead.enquiries] || lead.enquiries,
     'Current method': LABELS.method[lead.method || ''] || lead.method || '',
+    'Wants automated': LABELS.interest[lead.interest] || lead.interest || '',
     'Best time': lead.preferredTime || '',
     'Message': lead.message || '',
     'Score reasons': (lead.reasons || []).join('; '),
@@ -455,6 +472,7 @@ function notifyOwner_(lead, row, duplicateOf) {
     ['Students', LABELS.students[lead.students] || lead.students],
     ['Enquiries / month', LABELS.enquiries[lead.enquiries] || lead.enquiries],
     ['Current method', LABELS.method[lead.method || ''] || '—'],
+    ['Wants automated', LABELS.interest[lead.interest] || '—'],
     ['Best time', lead.preferredTime || '—'],
     ['Message', lead.message || '—'],
     ['Why this grade', (lead.reasons || []).join('; ')],
@@ -676,6 +694,7 @@ function testLead() {
     students: '100-300',
     enquiries: '50-150',
     method: 'register',
+    interest: 'fees',
     preferredTime: 'after 7 pm',
     message: 'This is a test lead from testLead().',
     source: 'demo',

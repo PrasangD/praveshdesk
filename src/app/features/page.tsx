@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CtaBand } from "@/components/CtaBand";
 import { FeatureList } from "@/components/FeatureList";
 import { PageIntro, Section } from "@/components/PageIntro";
@@ -15,6 +16,8 @@ export const metadata: Metadata = pageMeta({
 const modules = [
   { name: "Admission enquiries and follow-up", state: "Available now", body: "Everything on this page." },
   { name: "Fee instalment tracking", state: "Available now as an add-on", body: "A due-date list, a pending-fees report, and a reminder list for staff." },
+  { name: "Attendance, report cards, receipts, staff hours", state: "Built to order", body: "Not a product you switch on — we build the version your institute actually needs." },
+  { name: "Whatever your institute does by hand", state: "Built to order", body: "Describe the job and we quote a fixed price for it, or tell you it is not worth automating." },
   { name: "Scholarship test and event registration", state: "Planned", body: "Registrations flow straight into your enquiry list, so test-takers get followed up." },
   { name: "Official WhatsApp alerts", state: "Planned", body: "Approved WhatsApp notifications to your own staff, sent through Meta's official platform." },
 ];
@@ -33,9 +36,10 @@ export default function FeaturesPage() {
         <FeatureList detailed />
       </Section>
 
-      <Section title="What it does not do, on purpose" className="border-t border-rule bg-register/60">
+      <Section title="What the admissions system does not do, on purpose" className="border-t border-rule bg-register/60">
         <p className="max-w-2xl text-lg">
-          Keeping it small is why your staff will keep using it. These are deliberately left out:
+          Keeping it small is why your staff will keep using it. These are deliberately left out of the product — the
+          first two we will not build at any price, the rest is simply somebody else&apos;s job:
         </p>
         <ul className="mt-6 max-w-2xl space-y-3">
           {notIncluded.map((n) => (
@@ -49,7 +53,20 @@ export default function FeaturesPage() {
         </ul>
       </Section>
 
-      <Section title="Modules">
+      <Section title="Beyond admissions">
+        <p className="max-w-2xl text-lg">
+          Everything above is the part we have already built and can show you working. The rest of what your staff do by
+          hand — fees, attendance, marks, receipts, staff hours, your own reports — gets built for your institute
+          specifically, at a fixed price agreed before we start.
+        </p>
+        <p className="mt-5">
+          <Link href="/automations" className="text-lg font-semibold text-ink underline">
+            See the full list, and how a custom build works
+          </Link>
+        </p>
+      </Section>
+
+      <Section title="Modules" className="border-t border-rule">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[36rem] border-collapse text-left text-lg">
             <thead>

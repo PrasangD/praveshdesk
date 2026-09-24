@@ -47,8 +47,11 @@ export const features: Feature[] = [
   },
 ];
 
+// Scope limits for the admissions product specifically. Anything outside this
+// list is a question for /automations, not a flat no — keep the two in step.
 export const notIncluded = [
-  "Bulk or automated WhatsApp messages to parents",
-  "Online classes, tests or a student app",
-  "Replacing your existing fee or accounting software",
+  "Bulk or automated WhatsApp messages to parents, from any tool that is not Meta's official one",
+  "Online classes, video lessons or an app students log into",
+  "Book-keeping, GST filing or anything that replaces your accountant",
+  "Judgement calls: which student to admit, what fee to waive, who to call personally",
 ];

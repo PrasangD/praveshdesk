@@ -7,7 +7,7 @@ export const site = {
   name: "PraveshDesk",
   tagline: "Every enquiry gets a call back.",
   shortDescription:
-    "A done-for-you admission enquiry and follow-up system for coaching classes in Dombivli, Kalyan, Thane and nearby.",
+    "Done-for-you software for coaching classes in Dombivli, Kalyan, Thane and nearby: admission enquiries and follow-up first, then whatever else your staff still do by hand.",
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://praveshdesk.pages.dev").replace(/\/$/, ""),
   phone: process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "+91 90000 00000",
   whatsappNumber,
@@ -27,6 +27,7 @@ export function whatsappLink(text: string) {
 
 export const nav = [
   { href: "/features", label: "Features" },
+  { href: "/automations", label: "Automations" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
   { href: "/coaching-classes", label: "Areas" },

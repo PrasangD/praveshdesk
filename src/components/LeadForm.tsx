@@ -5,10 +5,12 @@ import { useRef, useState } from "react";
 import { cities, type CitySlug } from "@/lib/cities";
 import {
   ENQUIRY_OPTIONS,
+  INTEREST_OPTIONS,
   METHOD_OPTIONS,
   ROLE_OPTIONS,
   STUDENT_OPTIONS,
   type CalculatorSnapshot,
+  type Interest,
   type LeadSource,
 } from "@/lib/lead-options";
 import { site, whatsappLink } from "@/lib/site";
@@ -45,6 +47,10 @@ type Props = {
   submitLabel?: string;
   showPreferredTime?: boolean;
   id?: string;
+  /** The automations page asks for the job itself, not just "anything else". */
+  messageLabel?: React.ReactNode;
+  messageHint?: string;
+  defaultInterest?: Interest;
 };
 
 type Status = "idle" | "sending" | "error";
@@ -56,6 +62,9 @@ export function LeadForm({
   submitLabel = "Book my free demo",
   showPreferredTime = true,
   id = "lead-form",
+  messageLabel,
+  messageHint,
+  defaultInterest,
 }: Props) {
   const router = useRouter();
   const startedAt = useRef(Date.now());
@@ -90,6 +99,7 @@ export function LeadForm({
       students: text("students") || "not-sure",
       enquiries: text("enquiries") || "not-sure",
       method: text("method"),
+      interest: text("interest") || "not-sure",
       preferredTime: text("preferredTime"),
       message: text("message"),
       consent: fd.get("consent") === "on",
@@ -258,10 +268,27 @@ export function LeadForm({
       )}
 
       <div className="sm:col-span-2">
+        <label htmlFor={`${id}-interest`} className="field-label">What would you like sorted out first?</label>
+        <select id={`${id}-interest`} name="interest" className="field" defaultValue={defaultInterest ?? "admissions"}>
+          {INTEREST_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+        <p className="field-hint mt-1">
+          Anything on this list, or something that is not. Ask and we will tell you if it can be built.
+        </p>
+      </div>
+
+      <div className="sm:col-span-2">
         <label htmlFor={`${id}-message`} className="field-label">
-          Anything we should know? <span className="font-normal text-muted">(optional)</span>
+          {messageLabel ?? (
+            <>
+              Anything we should know? <span className="font-normal text-muted">(optional)</span>
+            </>
+          )}
         </label>
-        <textarea id={`${id}-message`} name="message" rows={3} maxLength={1000} className="field min-h-24" />
+        {messageHint && <p className="field-hint mb-1">{messageHint}</p>}
+        <textarea id={`${id}-message`} name="message" rows={messageHint ? 5 : 3} maxLength={1000} className="field min-h-24" />
       </div>
 
       {/* Honeypot: hidden from people, tempting to bots. */}

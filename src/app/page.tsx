@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AreasList } from "@/components/AreasList";
+import { AutomationPreview } from "@/components/AutomationCatalogue";
 import { FaqList } from "@/components/FaqList";
 import { FeatureList } from "@/components/FeatureList";
 import { JsonLd } from "@/components/JsonLd";
@@ -11,6 +12,7 @@ import { PricingPlans } from "@/components/PricingPlans";
 import { RegisterHero } from "@/components/RegisterHero";
 import { SetupSteps } from "@/components/SetupSteps";
 import { TrustList } from "@/components/TrustList";
+import { automationCount } from "@/lib/automations";
 import { cities } from "@/lib/cities";
 import { generalFaqs } from "@/lib/faqs";
 import { pageMeta } from "@/lib/metadata";
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
   ...pageMeta({
     title: `Enquiry follow-up for coaching classes in Dombivli | ${site.name}`,
     description:
-      "Every enquiry in one list, a daily list of who to call, and a weekly report for the owner. Set up in person for coaching classes in Dombivli, Kalyan, Thane and nearby.",
+      "Every enquiry in one list, a daily list of who to call, and a weekly report for the owner — plus fees, attendance, report cards and paperwork built to order. Set up in person for coaching classes in Dombivli, Kalyan, Thane and nearby.",
     path: "/",
   }),
   title: { absolute: `Enquiry follow-up for coaching classes in Dombivli | ${site.name}` },
@@ -56,7 +58,8 @@ export default function HomePage() {
             </h1>
             <p className="mt-6 max-w-xl text-xl leading-relaxed">
               {site.name} turns your reception register and WhatsApp chats into one follow-up list your staff actually
-              use. Built for coaching classes, set up in person in Dombivli, Kalyan, Thane and nearby.
+              use — and then takes on the fees, attendance and paperwork they still do by hand. Built for coaching
+              classes, set up in person in Dombivli, Kalyan, Thane and nearby.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/demo" className="btn btn-primary">
@@ -95,7 +98,34 @@ export default function HomePage() {
         </p>
       </Section>
 
-      <Section title="Live in three working days" intro="You don't learn software. We come to your institute and set it up around how you already work.">
+      <Section
+        title="Then everything else you still do by hand"
+        intro={
+          <>
+            Admissions is where we start, because that is where the money leaks. Once it is running, the same setup
+            takes on the rest of the week: fee reminders, attendance, report cards, receipts, staff hours, your Monday
+            numbers.
+          </>
+        }
+      >
+        <AutomationPreview />
+        <div className="mt-10 max-w-3xl border-l-2 border-margin pl-5">
+          <p className="text-xl font-bold text-ink-deep">
+            If your institute does something none of these cover, that is the one we most want to hear about.
+          </p>
+          <p className="mt-2 text-lg">
+            Describe the job in a sentence. We will tell you whether it can be built, what it would take, and whether it
+            is worth your money — before you pay anything.
+          </p>
+        </div>
+        <p className="mt-8">
+          <Link href="/automations" className="text-lg font-semibold text-ink underline">
+            See all {automationCount} jobs we can take off your staff
+          </Link>
+        </p>
+      </Section>
+
+      <Section title="Live in three working days" intro="You don't learn software. We come to your institute and set it up around how you already work." className="bg-register/60">
         <SetupSteps />
       </Section>
 

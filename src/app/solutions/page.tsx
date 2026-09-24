@@ -7,7 +7,7 @@ import { pageMeta } from "@/lib/metadata";
 export const metadata: Metadata = pageMeta({
   title: "Who it's for: tuition classes, Std 11–12 and entrance coaching",
   description:
-    "PraveshDesk fits owner-run coaching classes with 100 to 600 students: school tuition, Std 11–12, JEE, NEET and MHT-CET coaching, and skill institutes.",
+    "PraveshDesk fits owner-run coaching classes with 100 to 600 students: school tuition, Std 11–12, JEE, NEET and MHT-CET coaching, and skill institutes. Admissions first, then whatever else is done by hand.",
   path: "/solutions",
 });
 
@@ -29,7 +29,8 @@ const fits = [
 const notFits = [
   "Large chains already using a dedicated admissions CRM with a full-time admin",
   "Home tutors with only a few enquiries a month, where a notebook works fine",
-  "Institutes that want a complete school ERP with timetables, attendance and exams",
+  "Institutes that want one packaged ERP, bought off the shelf, that covers everything on day one",
+  "Anyone who wants the work done without telling us how their institute actually runs",
 ];
 
 export default function SolutionsPage() {
@@ -51,6 +52,22 @@ export default function SolutionsPage() {
             </li>
           ))}
         </ul>
+      </Section>
+
+      <Section
+        title="What we take on, once you are running"
+        intro="The fit above is for admissions, which is where almost every institute starts. After that the question changes from 'does this product suit us' to 'what else is your staff doing by hand'."
+      >
+        <p className="max-w-2xl text-lg">
+          Fees, attendance, report cards, receipts, certificates, staff hours, the owner&apos;s Monday numbers — each one
+          built for your institute rather than switched on from a menu. If the job is specific to how you work, that is
+          an argument for building it, not against.
+        </p>
+        <p className="mt-5">
+          <Link href="/automations" className="text-lg font-semibold text-ink underline">
+            See everything we can automate
+          </Link>
+        </p>
       </Section>
 
       <Section title="When it is not the right fit" className="border-t border-rule bg-register/60">

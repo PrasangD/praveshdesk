@@ -11,7 +11,8 @@ export function Footer() {
         <div className="max-w-sm">
           <Logo />
           <p className="mt-4 text-base">
-            A done-for-you enquiry and follow-up system for coaching classes. Based in {site.baseLocation}, {site.region}.
+            Done-for-you software for coaching classes: admission follow-up first, then whatever else is still done by
+            hand. Based in {site.baseLocation}, {site.region}.
           </p>
           <p className="mt-3 text-base">{site.replyPromise}</p>
         </div>
@@ -51,6 +52,7 @@ export function Footer() {
           <ul className="mt-3 space-y-2 text-base">
             {[
               ["/about", "About"],
+              ["/automations", "What we can automate"],
               ["/solutions", "Who it's for"],
               ["/contact", "Contact"],
               ["/privacy", "Privacy policy"],

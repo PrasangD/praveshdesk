@@ -53,6 +53,10 @@ export default function ContactPage() {
           </div>
           <div>
             <h2 className="text-2xl font-bold">Send us a message</h2>
+            <p className="mt-3 text-lg">
+              A question about admissions, or a job at your institute you want done automatically — both belong here.
+              Pick the area below and describe it in your own words.
+            </p>
             <div className="mt-6">
               <LeadForm source="contact" submitLabel="Send message" id="contact-form" />
             </div>

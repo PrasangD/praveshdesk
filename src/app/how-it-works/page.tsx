@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CtaBand } from "@/components/CtaBand";
 import { PageIntro, Section } from "@/components/PageIntro";
 import { SetupSteps } from "@/components/SetupSteps";
@@ -7,7 +8,7 @@ import { pageMeta } from "@/lib/metadata";
 export const metadata: Metadata = pageMeta({
   title: "How it works: live in three working days",
   description:
-    "A visit to your institute, a build in your own Google account, and 30 minutes of staff training. Then two minutes a day for your front desk.",
+    "A visit to your institute, a build in your own Google account, and 30 minutes of staff training. Then two minutes a day for your front desk, and a fixed price whenever you want the next job automated.",
   path: "/how-it-works",
 });
 
@@ -60,6 +61,25 @@ export default function HowItWorksPage() {
             </li>
           ))}
         </ul>
+      </Section>
+
+      <Section title="After it is running" className="border-t border-rule bg-register/60">
+        <div className="max-w-3xl">
+          <p className="text-lg">
+            Once admissions are handled, the monthly review stops being about the system and starts being about the rest
+            of your week. Nearly every institute names the same kind of thing: the fee list somebody rebuilds every
+            Monday, the report cards that eat a Sunday, the receipts written by hand.
+          </p>
+          <p className="mt-4 text-lg">
+            You name one, we quote a fixed price for it, and it gets built the same way — in your own Google account,
+            around how your staff already work. You are never obliged to ask for anything more.
+          </p>
+          <p className="mt-6">
+            <Link href="/automations" className="text-lg font-semibold text-ink underline">
+              See what else can be automated
+            </Link>
+          </p>
+        </div>
       </Section>
 
       <CtaBand />
