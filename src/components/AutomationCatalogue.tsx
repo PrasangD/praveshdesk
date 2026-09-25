@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { automationGroups } from "@/lib/automations";
 
@@ -48,7 +49,11 @@ export function AutomationCatalogue() {
         {groups.map((group) => (
           <section key={group.id} id={group.id} className="scroll-mt-24">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b-2 border-ink pb-2">
-              <h3 className="text-2xl font-bold sm:text-[1.75rem]">{group.name}</h3>
+              <h3 className="text-2xl font-bold sm:text-[1.75rem]">
+                <Link href={`/automations/${group.id}`} className="text-ink-deep no-underline hover:underline">
+                  {group.name}
+                </Link>
+              </h3>
               <p className="text-base text-muted">Takes the work off: {group.lead.toLowerCase()}</p>
             </div>
 
@@ -65,6 +70,11 @@ export function AutomationCatalogue() {
                 </li>
               ))}
             </ul>
+            <p className="mt-4">
+              <Link href={`/automations/${group.id}`} className="text-lg font-semibold text-ink underline">
+                How {group.name.toLowerCase()} gets built, with a worked example
+              </Link>
+            </p>
           </section>
         ))}
       </div>
@@ -78,7 +88,11 @@ export function AutomationPreview() {
     <ul className="grid gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
       {automationGroups.map((g) => (
         <li key={g.id} className="border-t border-rule py-4">
-          <h3 className="text-lg font-bold text-ink-deep">{g.name}</h3>
+          <h3 className="text-lg font-bold">
+            <Link href={`/automations/${g.id}`} className="text-ink-deep no-underline hover:underline">
+              {g.name}
+            </Link>
+          </h3>
           <p className="mt-1 text-base text-muted">{g.items.length} jobs done by hand today</p>
         </li>
       ))}

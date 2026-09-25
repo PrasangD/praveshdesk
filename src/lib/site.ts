@@ -4,11 +4,11 @@
 const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919000000000";
 
 export const site = {
-  name: "PraveshDesk",
+  name: "Kaamless",
   tagline: "If you do it every week, it should do itself.",
   shortDescription:
     "Automation built to order for companies and institutes around Dombivli, Thane and Navi Mumbai. One process at a time, a fixed price, and it keeps running after I leave.",
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://praveshdesk.pages.dev").replace(/\/$/, ""),
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://kaamless.pages.dev").replace(/\/$/, ""),
   phone: process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "+91 90000 00000",
   whatsappNumber,
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "yourname@gmail.com",

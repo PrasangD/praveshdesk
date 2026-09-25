@@ -1,5 +1,5 @@
 /**
- * PraveshDesk — website request inbox (Google Sheets + Apps Script)
+ * Kaamless — website request inbox (Google Sheets + Apps Script)
  *
  * The website is fully static, so the browser posts each form straight to this web app.
  * This script is therefore the only "server": it validates, filters spam and scores
@@ -29,12 +29,13 @@
  *   OWNER_EMAIL       where alerts go (defaults to your account)
  *   FOUNDER_NAME      used in the prefilled WhatsApp message
  *   WHATSAPP_NUMBER   your business WhatsApp, digits only with country code (e.g. 919000000000)
+ *   SITE_URL          your live site, no trailing slash — used for links in the auto-reply
  *   TURNSTILE_SECRET  Cloudflare Turnstile secret key (optional but recommended)
  */
 
 const CONFIG = {
   SHEET_NAME: 'Leads',
-  BRAND: 'PraveshDesk',
+  BRAND: 'Kaamless',
   TIMEZONE: 'Asia/Kolkata',
   WORK_START_HOUR: 9,
   WORK_END_HOUR: 21,
@@ -466,6 +467,7 @@ function props_() {
     owner: p.getProperty('OWNER_EMAIL') || Session.getEffectiveUser().getEmail(),
     founder: p.getProperty('FOUNDER_NAME') || 'the team',
     whatsapp: p.getProperty('WHATSAPP_NUMBER') || '',
+    site: (p.getProperty('SITE_URL') || '').replace(/\/$/, ''),
   };
 }
 
@@ -528,20 +530,35 @@ function notifyOwner_(lead, row, duplicateOf) {
 function sendAutoReply_(lead) {
   const p = props_();
   const first = String(lead.name).split(/\s+/)[0];
+  const site = p.site || '';
   const wa = p.whatsapp
     ? `https://wa.me/${p.whatsapp}?text=${encodeURIComponent('Hi, I just sent a request on the ' + CONFIG.BRAND + ' website.')}`
     : '';
+
+  // The auto-reply is the only thing that reaches them while they are still
+  // thinking about it, so it does a job: it confirms, it sets expectations,
+  // and it gives them two things to do that are useful even if they never
+  // reply. Nothing here asks them to buy anything.
   const plain =
     `Hi ${first},\n\n` +
-    `Thanks for your request for ${lead.organisation}. ${p.founder} will call or WhatsApp you within one working day ` +
-    `to fix a time for a short demo.\n\n` +
-    (wa ? `If you'd rather talk now, message us on WhatsApp: ${wa}\n\n` : '') +
+    `Thanks — I've got your request for ${lead.organisation}, and I'll call or WhatsApp you within one working day.\n\n` +
+    `When we speak it'll be one question: what happens today, who does it, and how often. If it turns out the job isn't ` +
+    `worth automating, I'll tell you that — it happens, and it costs you nothing to find out.\n\n` +
+    (site
+      ? `Two things worth a look in the meantime, neither of which needs me:\n\n` +
+        `  1. A working automation you can run yourself: ${site}/demo\n` +
+        `     Press the button. The report is calculated in your browser, not played back.\n\n` +
+        `  2. What the job is costing you: ${site}/calculator\n` +
+        `     Four numbers, no form, nothing sent anywhere.\n\n`
+      : '') +
+    (wa ? `If you'd rather talk now: ${wa}\n\n` : '') +
     `${p.founder}\n${CONFIG.BRAND}\n\n` +
-    `You received this because you submitted a form on our website. We will not add you to any mailing list.`;
+    `You received this because you submitted a form on the website. You are not on any mailing list, and there is ` +
+    `nothing to unsubscribe from.`;
 
   MailApp.sendEmail({
     to: lead.email,
-    subject: `We've got your request — ${CONFIG.BRAND}`,
+    subject: `Got your request — ${CONFIG.BRAND}`,
     body: plain,
     replyTo: p.owner,
     name: CONFIG.BRAND,

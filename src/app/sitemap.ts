@@ -1,6 +1,7 @@
 export const dynamic = "force-static";
 
 import type { MetadataRoute } from "next";
+import { automationGroups } from "@/lib/automations";
 import { cities } from "@/lib/cities";
 import { site } from "@/lib/site";
 
@@ -23,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   return [
     ...staticRoutes.map(([path, priority]) => ({ url: `${site.url}${path}`, lastModified: now, priority })),
+    ...automationGroups.map((g) => ({ url: `${site.url}/automations/${g.id}`, lastModified: now, priority: 0.85 })),
     ...cities.map((c) => ({ url: `${site.url}/automation-services/${c.slug}`, lastModified: now, priority: 0.8 })),
   ];
 }

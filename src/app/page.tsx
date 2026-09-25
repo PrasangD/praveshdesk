@@ -9,7 +9,7 @@ import { PricingSummary } from "@/components/PricingPlans";
 import { RequestForm } from "@/components/RequestForm";
 import { RunLog } from "@/components/RunLog";
 import { Section } from "@/components/PageIntro";
-import { automationCount } from "@/lib/automations";
+import { automationCount, automationGroups } from "@/lib/automations";
 import { cities } from "@/lib/cities";
 import { generalFaqs } from "@/lib/faqs";
 import { pageMeta } from "@/lib/metadata";
@@ -29,27 +29,60 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
+  // A service-area business: no walk-in address, so geo + areaServed carry the
+  // local signal instead of a street address. The catalogue is exposed as an
+  // OfferCatalog so each area page has an entity to attach itself to.
   const orgJsonLd = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
+    "@id": `${site.url}/#business`,
     name: site.name,
     url: site.url,
     description: site.shortDescription,
     telephone: site.phone,
     email: site.email,
+    priceRange: "₹₹",
+    currenciesAccepted: "INR",
+    knowsLanguage: ["en", "hi", "mr"],
     address: {
       "@type": "PostalAddress",
       addressLocality: "Dombivli",
       addressRegion: "Maharashtra",
+      postalCode: "421201",
       addressCountry: "IN",
     },
+    geo: { "@type": "GeoCoordinates", latitude: 19.2183, longitude: 73.0865 },
     areaServed: cities.map((c) => ({ "@type": "City", name: c.name })),
     serviceType: "Business process and infrastructure automation",
+    founder: { "@type": "Person", name: site.founderName, jobTitle: site.founderRole },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Automation services",
+      itemListElement: automationGroups.map((g) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: g.name,
+          url: `${site.url}/automations/${g.id}`,
+        },
+      })),
+    },
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: generalFaqs.slice(0, 6).map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   };
 
   return (
     <>
       <JsonLd data={orgJsonLd} />
+      <JsonLd data={faqJsonLd} />
 
       <section className="overflow-hidden">
         <div className="container-page grid items-center gap-12 pb-16 pt-10 sm:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pb-24">

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * PraveshDesk demo — "the Monday report that builds itself"
+ * Kaamless demo — "the Monday report that builds itself"
  *
  * Run it in front of a prospect:
  *
@@ -249,7 +249,7 @@ ${result.duplicates ? `    <li><strong>${result.duplicates} duplicate invoice</s
   </ul>
 
   <footer>
-    Built by PraveshDesk. The work above took ${ms.toFixed(1)} ms. Doing it by hand takes about three hours, every week.
+    Built by Kaamless. The work above took ${ms.toFixed(1)} ms. Doing it by hand takes about three hours, every week.
   </footer>
 </div>
 </body>
@@ -272,7 +272,7 @@ function main() {
   const line = (label, value) => console.log('  ' + String(label).padEnd(22) + value);
 
   console.log('');
-  console.log('  PraveshDesk demo — weekly branch report');
+  console.log('  Kaamless demo — weekly branch report');
   console.log('  ' + '-'.repeat(52));
   sources.forEach((s) => line('read', `${s.file} (${s.lines.length - 1} rows)`));
   console.log('');

@@ -15,7 +15,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-rule/70 bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="rounded no-underline" aria-label="PraveshDesk home">
+        <Link href="/" className="rounded no-underline" aria-label="Kaamless home">
           <Logo />
         </Link>
 

@@ -1,16 +1,21 @@
-# PraveshDesk
+# Kaamless
 
 Automation, built to order, for companies and institutes around Dombivli, Thane and Navi Mumbai.
 One process at a time, a fixed price per job, built on the client's own systems and handed over
 with the code.
 
-This repository holds three separate things:
+This repository holds three separate things, plus two runbooks:
 
 | | What it is | Who sees it |
 | --- | --- | --- |
 | **`src/`** | The public website | Anyone |
 | **`demo-pack/`** | A working automation you run on a laptop in front of a prospect | Clients, in the room |
 | **`pitch-kit/`** | Outreach, discovery, audit, proposal and quoting templates | Only you |
+| **[`DEPLOY.md`](DEPLOY.md)** | Getting it live, step by step, in about 90 minutes | Only you |
+| **[`MARKETING.md`](MARKETING.md)** | Every free way to get found, in priority order | Only you |
+
+**Start with [`DEPLOY.md`](DEPLOY.md).** Then [`MARKETING.md`](MARKETING.md) — the site converts
+traffic, it does not create it, and that document is honest about the timeline.
 
 Running cost: ₹0. The website is a fully static Next.js site hosted free on Cloudflare Pages. The
 contact forms post straight to your own Google Apps Script, which saves each request in a Google
@@ -46,6 +51,7 @@ it there and the whole site follows.
 ```
 src/app/                 pages (home, automations, demo, how-it-works, pricing, who-its-for,
                          calculator, about, contact, thank-you, privacy, terms, 404)
+src/app/automations/[area]/           10 deep topic pages, generated at build time  <-- the SEO
 src/app/automation-services/[city]/   7 service-area pages, generated at build time
 src/components/          Header, Footer, RunLog, RequestForm, DemoRunner, SavingsCalculator,
                          AutomationCatalogue, PricingPlans, Turnstile, ...
@@ -54,10 +60,12 @@ src/lib/automations.ts   the automation catalogue + what you refuse to build <--
 src/lib/pricing.ts       every price on the site                             <-- your rate card
 src/lib/sectors.ts       who it's for, and who it isn't
 src/lib/cities.ts        service-area page content                           <-- edit carefully
+src/lib/automation-guides.ts  long-form content for the 10 area pages    <-- write more of these
 src/lib/savings.ts       the arithmetic behind /calculator
 src/lib/demo-pipeline.ts the automation that runs live on /demo
 src/lib/faqs.ts request-options.ts metadata.ts
 public/_headers          security headers for Cloudflare Pages
+public/llms.txt          a plain summary for AI search engines
 apps-script/Code.gs      request inbox: validation, spam checks, scoring, emails, reminders
 demo-pack/               the offline demo — see demo-pack/README.md
 pitch-kit/               the sales material — see pitch-kit/README.md
@@ -112,21 +120,39 @@ shows the thank-you page, so you can work on the site before the Sheet exists.
 - **`privacy` and `terms`** are plain-language drafts covering audits, fixed-price builds, IP and
   handover. Get them reviewed by a lawyer before relying on them.
 
-### A note on the name
+### The name
 
-**PraveshDesk** means, roughly, *admission desk* — the name comes from an earlier version of this
-business that sold admission enquiry follow-up to coaching classes. It no longer matches what the
-site sells, and it reads as education-specific to exactly the corporate buyers you now want.
+**Kaamless** — *kaam* (work) with *less* on the end. It replaced PraveshDesk, which meant
+"admission desk" and no longer matched what is sold here.
 
-Renaming is one edit to `name` in `src/lib/site.ts` plus a new logo mark in
-`src/components/Logo.tsx`. If you do it, check the name is free first: web search, domain search,
-and the trademark search on the IP India website. Do it before you print the one-pager.
+`kaamless.com` was unregistered when this was written (checked against Verisign's registry) and
+no company appears to be trading under the name. **Re-check both before you commit to it** —
+availability changes daily, and the trademark search at
+[ipindiaonline.gov.in](https://ipindiaonline.gov.in/tmrpublicsearch/) is free.
+
+Changing it again is one line: `name` in `src/lib/site.ts`. The logo mark in
+`src/components/Logo.tsx` is a loop with a tick — it carries no wordmark, so it survives a rename.
+
+### Why there are ten area pages
+
+`/automations/<area>` is where the organic traffic is supposed to come from. "Automation
+services" is a phrase nobody searches and everybody sells; "automate excel reconciliation" is a
+phrase one specific person types at 6pm when they have had enough.
+
+Each page has unique long-form content in `src/lib/automation-guides.ts` — intro, symptoms,
+approach, a worked example with real arithmetic, and three FAQs — plus Service, FAQPage and
+BreadcrumbList structured data. `generateStaticParams` throws at build time if a group has no
+guide, so a group can never silently disappear from the site.
+
+**Do not generate area × city combinations.** Seventy near-identical pages is a doorway-page
+pattern that will damage the whole domain. Ten deep pages and seven honest city pages is
+deliberately where this stops.
 
 ## 3. Request inbox (Google Sheet + Apps Script), about 15 minutes
 
 Use your own Google account, not your employer's.
 
-1. Create a Google Sheet named `PraveshDesk Leads`.
+1. Create a Google Sheet named `Kaamless Leads`.
 2. Extensions → Apps Script. Replace `Code.gs` with `apps-script/Code.gs`. In Project Settings,
    tick "Show appsscript.json" and replace it with `apps-script/appsscript.json`.
 3. Project Settings → Script Properties → add `OWNER_EMAIL`, `FOUNDER_NAME` and

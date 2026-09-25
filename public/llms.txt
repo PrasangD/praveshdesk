@@ -1,0 +1,53 @@
+# Kaamless
+
+> Automation built to order for companies and institutes around Dombivli, Thane and Navi Mumbai.
+> One process at a time, a fixed price per job, built on the client's own systems and handed over
+> with the code. Run by one DevOps engineer, not an agency.
+
+Not a product or a platform. There is no subscription for software. The engagement is: a paid
+audit that says what is worth automating (and what is not), then a fixed price per build, then an
+optional monthly plan if the client would rather not maintain it themselves.
+
+## What gets automated
+
+- [Reports that build themselves](/automations/reports): the weekly or monthly report somebody assembles by hand from several sources.
+- [Data moving between systems](/automations/integration): export-then-import rituals, records typed into two places, daily files that arrive by email.
+- [Documents and paperwork](/automations/documents): invoices, receipts, certificates and ID cards generated from a record, numbered in sequence.
+- [Spreadsheets and back-office](/automations/spreadsheets): reconciliation done by eye, monthly cleaning, consolidating branch files, a workbook only one person understands.
+- [Deployments, environments and releases](/automations/deployments): CI/CD pipelines, environments as code, tested rollbacks, secrets management, rehearsed restores.
+- [Cloud cost and housekeeping](/automations/cloud): cost breakdowns, shutting down non-production out of hours, tagging, expiry alerts, orphaned resources.
+- [Monitoring, alerts and on-call](/automations/monitoring): external health checks, alert de-duplication and routing, status pages, incident timelines.
+- [Joining, moving and leaving](/automations/people): onboarding and offboarding across many tools, access reviews, asset tracking.
+- [Approvals and internal requests](/automations/requests): approval routing, escalation when someone is on leave, visible status, expense chasing.
+- [Schools, colleges and coaching institutes](/automations/institutes): fee dues and receipts, attendance, marks and report cards, parent updates.
+
+## Pricing
+
+- Automation audit: Rs 9,999, credited in full against the first build
+- Quick win: Rs 18,000 to Rs 45,000, ready in 3 to 7 working days
+- Connected module: Rs 60,000 to Rs 1,80,000, two to four weeks
+- System: from Rs 2,50,000, staged
+- Care plans: Rs 4,999 / Rs 9,999 / Rs 19,999 per month, optional
+- Day rate: Rs 12,000
+- Payment: half to start, half one week after it runs on real data
+
+## Key pages
+
+- [See an automation run](/demo): a working pipeline that cleans deliberately messy branch files in the browser. Not a recording.
+- [What a manual job costs](/calculator): hours, people and loaded cost in; yearly cost and payback period out. Runs entirely in the browser.
+- [How it works](/how-it-works): the five steps, what the audit involves, and what handover means.
+- [Pricing](/pricing): every number above, in full.
+- [Who it's for](/who-its-for): companies with more process than people, engineering teams with no DevOps, MIDC manufacturing, agencies, institutes — and who it is not for.
+
+## What will not be built, at any price
+
+Anything that pretends to be a person. Bulk messaging through unofficial WhatsApp tools. Scraping
+other organisations' customer or student data. Automation designed to make people redundant
+quietly. Any system only the builder can maintain — everything is handed over with the code, the
+credentials and written notes.
+
+## Service area
+
+Based in Dombivli, Maharashtra. On site across Dombivli, Kalyan, Thane, Navi Mumbai, Ulhasnagar,
+Ambernath and Badlapur, including the MIDC estates and the offices at Wagle Estate, Airoli and
+Mahape. Remote beyond that.

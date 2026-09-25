@@ -5,7 +5,7 @@ becomes two, it stops being read.
 
 ---
 
-## PraveshDesk — automation, built to order
+## Kaamless — automation, built to order
 
 **[YOUR NAME] · DevOps engineer · Dombivli**
 [PHONE] · [EMAIL] · [SITE]
