@@ -1,9 +1,14 @@
 /**
- * PraveshDesk — website lead inbox and automation (Google Sheets + Apps Script)
+ * PraveshDesk — website request inbox (Google Sheets + Apps Script)
  *
- * Note: leads now carry "Wants automated" (the interest field on the website form),
- * so an enquiry about fees, attendance or a job of their own arrives already sorted.
- * The allowed values are the group ids in src/lib/automations.ts, plus custom/not-sure.
+ * The website is fully static, so the browser posts each form straight to this web app.
+ * This script is therefore the only "server": it validates, filters spam and scores
+ * every request before saving it.
+ *
+ * Field values must stay in step with src/lib/request-options.ts on the website.
+ * "Wants automated" uses the group ids from src/lib/automations.ts, plus custom and
+ * not-sure. Anything unrecognised silently falls back to its default, so if you add
+ * an option on the website, add it to LABELS here in the same commit.
  *
  * The website is fully static, so the browser posts each form straight to this web app.
  * This script is therefore the only "server": it validates, filters spam and scores
@@ -12,7 +17,7 @@
  * What it does
  *   1. Checks the form (required fields, Indian mobile number, consent), spam traps,
  *      Cloudflare Turnstile (if configured) and hourly limits, then scores the lead A/B/C.
- *   2. Appends it to the "Leads" tab. Idempotent on Lead ID, so double-clicks never duplicate.
+ *   2. Appends it to the "Leads" tab. Idempotent on Request ID, so double-clicks never duplicate.
  *   3. Emails you instantly with the lead's grade, answers and one-tap WhatsApp/call links.
  *   4. Sends the lead a short auto-reply if they gave an email address.
  *   5. Hourly: reminds you about "New" leads not contacted within 2 hours (09:00–21:00 IST).
@@ -47,28 +52,38 @@ const CITIES = {
 };
 
 const HEADERS = [
-  'Received at', 'Lead ID', 'Status', 'Grade', 'Score', 'Name', 'Role', 'Institute', 'Area',
-  'Phone', 'Email', 'Students', 'Enquiries / month', 'Current method', 'Wants automated', 'Best time', 'Message',
+  'Received at', 'Request ID', 'Status', 'Grade', 'Score', 'Name', 'Role', 'Organisation', 'Kind', 'Area',
+  'Phone', 'Email', 'People', 'Hours on it', 'Wants automated', 'Best time', 'Message',
   'Score reasons', 'Calculator', 'Form', 'Page', 'UTM source', 'UTM medium', 'UTM campaign',
   'Referrer', 'Next follow-up', 'Notes', 'First contacted at', 'Reminder sent', 'Duplicate of',
 ];
 
-const STATUSES = ['New', 'Contacted', 'Demo booked', 'Demo done', 'Proposal sent', 'Won', 'Lost', 'Not a fit'];
+const STATUSES = ['New', 'Contacted', 'Call booked', 'Audit booked', 'Audit done', 'Quoted', 'Won', 'Lost', 'Not a fit'];
 const CLOSED = ['Won', 'Lost', 'Not a fit'];
 
 const LABELS = {
-  role: { owner: 'Owner/director', admin: 'Admin/reception', counsellor: 'Counsellor', other: 'Other' },
-  students: { 'not-sure': 'Not said', 'under-100': '<100', '100-300': '100–300', '300-600': '300–600', '600-plus': '600+' },
-  enquiries: { 'not-sure': 'Not sure', 'under-20': '<20', '20-50': '20–50', '50-150': '50–150', '150-plus': '150+' },
-  method: { '': '', register: 'Paper register', excel: 'Excel/Sheets', whatsapp: 'WhatsApp chats', software: 'Software/app', other: 'Other' },
-  interest: {
-    admissions: 'Admissions & follow-up', fees: 'Fees & collections', attendance: 'Attendance & batches',
-    tests: 'Tests, marks & report cards', parents: 'Parent communication', staff: 'Staff & daily admin',
-    documents: 'Paperwork & documents', owner: 'Owner reports', growth: 'Getting more students',
+  kind: { company: 'Company', institute: 'Institute', other: 'Other' },
+  role: {
+    owner: 'Owner/founder', operations: 'Operations', finance: 'Finance', engineering: 'IT/engineering',
+    hr: 'HR/admin', other: 'Other',
+  },
+  size: {
+    'not-sure': 'Not said', 'under-10': '<10', '10-50': '10–50', '50-200': '50–200',
+    '200-1000': '200–1,000', '1000-plus': '1,000+',
+  },
+  hours: {
+    'not-sure': 'Not sure', 'under-2': '<2 h/week', '2-5': '2–5 h/week', '5-15': '5–15 h/week',
+    '15-plus': '15+ h/week',
+  },
+  area: {
+    reports: 'Reports', integration: 'Data between systems', documents: 'Documents & paperwork',
+    spreadsheets: 'Spreadsheets & back-office', deployments: 'Deployments & environments',
+    cloud: 'Cloud cost & housekeeping', monitoring: 'Monitoring & on-call', people: 'Joiners & leavers',
+    requests: 'Approvals & requests', institutes: 'Institute back-office',
     custom: 'SOMETHING ELSE — read the message', 'not-sure': 'Not sure yet',
   },
 };
-const SOURCES = ['home', 'demo', 'contact', 'calculator', 'city', 'pricing', 'automations'];
+const SOURCES = ['home', 'demo', 'contact', 'calculator', 'city', 'pricing', 'automations', 'audit'];
 
 // ---------------------------------------------------------------------------
 // One-time setup: run this from the editor.
@@ -163,14 +178,14 @@ function validate_(b) {
     receivedAt: new Date().toISOString(),
     name: str_(b.name, 80),
     role: pick(b.role, Object.keys(LABELS.role), 'owner'),
-    institute: str_(b.institute, 120),
+    organisation: str_(b.organisation, 120),
+    kind: pick(b.kind, Object.keys(LABELS.kind), 'company'),
     city: str_(b.city, 40),
     phone: normalizePhone_(b.phone),
     email: str_(b.email, 120),
-    students: pick(b.students, Object.keys(LABELS.students), 'not-sure'),
-    enquiries: pick(b.enquiries, Object.keys(LABELS.enquiries), 'not-sure'),
-    method: pick(b.method, Object.keys(LABELS.method), ''),
-    interest: pick(b.interest, Object.keys(LABELS.interest), 'not-sure'),
+    size: pick(b.size, Object.keys(LABELS.size), 'not-sure'),
+    hours: pick(b.hours, Object.keys(LABELS.hours), 'not-sure'),
+    area: pick(b.area, Object.keys(LABELS.area), 'not-sure'),
     preferredTime: str_(b.preferredTime, 80),
     message: str_(b.message, 1000),
     source: pick(b.source, SOURCES, 'home'),
@@ -182,7 +197,7 @@ function validate_(b) {
 
   if (!/^[A-Za-z0-9-]{8,64}$/.test(lead.id)) errors.form = 'Reload the page and try again.';
   if (lead.name.length < 2) errors.name = 'Enter your name';
-  if (lead.institute.length < 2) errors.institute = "Enter your institute's name";
+  if (lead.organisation.length < 2) errors.organisation = "Enter your organisation's name";
   if (!CITIES[lead.city]) errors.city = 'Choose your area';
   if (!/^[6-9]\d{9}$/.test(lead.phone)) errors.phone = 'Enter a 10-digit mobile number';
   if (lead.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email)) errors.email = 'Enter a valid email, or leave it blank';
@@ -198,12 +213,13 @@ function validate_(b) {
   if (c && typeof c === 'object') {
     const n = (v, max) => (typeof v === 'number' && isFinite(v) && v >= 0 && v <= max ? v : 0);
     lead.calculator = {
-      enquiriesPerMonth: n(c.enquiriesPerMonth, 10000),
-      followUpRate: n(c.followUpRate, 100),
-      joinRate: n(c.joinRate, 100),
-      averageFee: n(c.averageFee, 10000000),
-      missedPerMonth: n(c.missedPerMonth, 10000),
-      yearlyValue: n(c.yearlyValue, 10000000000),
+      hoursPerWeek: n(c.hoursPerWeek, 168),
+      people: n(c.people, 10000),
+      monthlySalary: n(c.monthlySalary, 100000000),
+      buildCost: n(c.buildCost, 100000000),
+      hoursPerYear: n(c.hoursPerYear, 10000000),
+      yearlyCost: n(c.yearlyCost, 10000000000),
+      paybackMonths: typeof c.paybackMonths === 'number' && isFinite(c.paybackMonths) ? c.paybackMonths : null,
     };
   }
   return { lead, errors };
@@ -219,29 +235,33 @@ function score_(lead) {
   const add = (points, reason) => { score += points; reasons.push((points > 0 ? '+' : '') + points + ' ' + reason); };
 
   if (lead.role === 'owner') add(15, 'decision maker');
-  else if (lead.role === 'admin' || lead.role === 'counsellor') add(5, 'front-desk contact');
+  else if (lead.role === 'operations' || lead.role === 'finance') add(10, 'owns the process');
+  else if (lead.role === 'engineering') add(8, 'technical contact');
+  else add(3, 'other contact');
 
-  const students = { '100-300': [20, '100–300 students'], '300-600': [25, '300–600 students'],
-    '600-plus': [10, '600+ students (may need a bigger system)'], 'not-sure': [5, 'size unknown'] }[lead.students];
-  if (students) add(students[0], students[1]);
+  // Hours a week is the single best predictor of whether a build pays for itself.
+  const hours = { 'under-2': [-10, 'under 2 h/week — probably too small to justify a build'],
+    '2-5': [15, '2–5 h/week'], '5-15': [30, '5–15 h/week — clear payback'],
+    '15-plus': [35, '15+ h/week — someone is doing this full time'],
+    'not-sure': [5, 'size of the job unknown'] }[lead.hours];
+  if (hours) add(hours[0], hours[1]);
 
-  const enquiries = { '20-50': [15, '20–50 enquiries/month'], '50-150': [25, '50–150 enquiries/month'],
-    '150-plus': [20, '150+ enquiries/month'], 'under-20': [-5, 'under 20 enquiries/month'] }[lead.enquiries];
-  if (enquiries) add(enquiries[0], enquiries[1]);
+  const size = { 'under-10': [0, 'under 10 people'], '10-50': [15, '10–50 people'],
+    '50-200': [20, '50–200 people'], '200-1000': [15, '200–1,000 people'],
+    '1000-plus': [8, '1,000+ people (longer procurement)'], 'not-sure': [5, 'size unknown'] }[lead.size];
+  if (size) add(size[0], size[1]);
 
-  if (['register', 'excel', 'whatsapp'].indexOf(lead.method) !== -1) add(15, 'tracks enquiries manually');
-  else if (lead.method === 'software') add(-10, 'already uses software');
+  if (lead.city !== 'other') add(10, 'inside the on-site area');
 
-  if (lead.city !== 'other') add(15, 'inside service area');
-  else add(-5, 'outside service area');
+  if (lead.area === 'custom') add(10, 'described a job of their own');
+  else if (lead.area && lead.area !== 'not-sure') add(5, 'named a specific area');
 
-  if (lead.interest === 'custom') add(10, 'named a job of their own to automate');
-  else if (lead.interest && lead.interest !== 'not-sure' && lead.interest !== 'admissions') {
-    add(5, 'wants more than admissions');
-  }
-
-  if (lead.message.length >= 20) add(5, 'wrote a message');
+  if (lead.message.length >= 20) add(5, 'wrote a real message');
   if (lead.calculator) add(5, 'used the calculator');
+  // Someone who has already worked out their own payback is a long way down the path.
+  if (lead.calculator && lead.calculator.paybackMonths !== null && lead.calculator.paybackMonths <= 12) {
+    add(10, 'their own numbers show payback inside a year');
+  }
 
   score = Math.max(0, Math.min(100, score));
   return { score, grade: score >= 60 ? 'A' : score >= 35 ? 'B' : 'C', reasons };
@@ -289,8 +309,8 @@ function handleLead_(lead) {
       ? sheet.getRange(2, 1, sheet.getLastRow() - 1, HEADERS.length).getValues()
       : [];
 
-    // Idempotency: a retried request carries the same Lead ID.
-    if (data.some((r) => r[col['Lead ID']] === lead.id)) {
+    // Idempotency: a retried request carries the same Request ID.
+    if (data.some((r) => r[col['Request ID']] === lead.id)) {
       return { ok: true, duplicateRequest: true };
     }
 
@@ -347,7 +367,7 @@ function formatSheet_(sheet) {
 
   sheet.setColumnWidth(col['Received at'] + 1, 150);
   sheet.setColumnWidth(col['Name'] + 1, 150);
-  sheet.setColumnWidth(col['Institute'] + 1, 200);
+  sheet.setColumnWidth(col['Organisation'] + 1, 200);
   sheet.setColumnWidth(col['Message'] + 1, 260);
   sheet.setColumnWidth(col['Score reasons'] + 1, 260);
 }
@@ -366,25 +386,27 @@ function headerIndex_(sheet) {
 function rowFromLead_(lead, duplicateOf) {
   const utm = lead.utm || {};
   const calc = lead.calculator
-    ? `${lead.calculator.enquiriesPerMonth}/mo, ${lead.calculator.followUpRate}% followed up, ` +
-      `${lead.calculator.joinRate}% join, fee ₹${lead.calculator.averageFee}, est. ₹${lead.calculator.yearlyValue}/yr`
+    ? `${lead.calculator.hoursPerWeek} h/week × ${lead.calculator.people} people, ` +
+      `${lead.calculator.hoursPerYear} h/yr, costing ₹${lead.calculator.yearlyCost}/yr; ` +
+      `build ₹${lead.calculator.buildCost}, payback ` +
+      `${lead.calculator.paybackMonths === null ? 'n/a' : lead.calculator.paybackMonths + ' months'}`
     : '';
   const values = {
     'Received at': new Date(lead.receivedAt),
-    'Lead ID': lead.id,
+    'Request ID': lead.id,
     'Status': 'New',
     'Grade': lead.grade,
     'Score': lead.score,
     'Name': lead.name,
     'Role': LABELS.role[lead.role] || lead.role,
-    'Institute': lead.institute,
+    'Organisation': lead.organisation,
+    'Kind': LABELS.kind[lead.kind] || lead.kind,
     'Area': lead.cityName,
     'Phone': formatPhone_(lead.phone),
     'Email': lead.email || '',
-    'Students': LABELS.students[lead.students] || lead.students,
-    'Enquiries / month': LABELS.enquiries[lead.enquiries] || lead.enquiries,
-    'Current method': LABELS.method[lead.method || ''] || lead.method || '',
-    'Wants automated': LABELS.interest[lead.interest] || lead.interest || '',
+    'People': LABELS.size[lead.size] || lead.size,
+    'Hours on it': LABELS.hours[lead.hours] || lead.hours,
+    'Wants automated': LABELS.area[lead.area] || lead.area || '',
     'Best time': lead.preferredTime || '',
     'Message': lead.message || '',
     'Score reasons': (lead.reasons || []).join('; '),
@@ -462,17 +484,16 @@ function notifyOwner_(lead, row, duplicateOf) {
   const p = props_();
   const first = String(lead.name).split(/\s+/)[0];
   const waText = `Namaste ${first}, this is ${p.founder} from ${CONFIG.BRAND}. Thank you for your request for ` +
-    `${lead.institute}. When would be a good time for a 10-minute call this week?`;
+    `${lead.organisation}. When would be a good time for a short call this week?`;
   const rows = [
     ['Grade', `${lead.grade} (${lead.score}/100)`],
     ['Name', `${lead.name} — ${LABELS.role[lead.role] || lead.role}`],
-    ['Institute', `${lead.institute}, ${lead.cityName}`],
+    ['Organisation', `${lead.organisation} (${LABELS.kind[lead.kind] || lead.kind}), ${lead.cityName}`],
     ['Phone', formatPhone_(lead.phone)],
     ['Email', lead.email || '—'],
-    ['Students', LABELS.students[lead.students] || lead.students],
-    ['Enquiries / month', LABELS.enquiries[lead.enquiries] || lead.enquiries],
-    ['Current method', LABELS.method[lead.method || ''] || '—'],
-    ['Wants automated', LABELS.interest[lead.interest] || '—'],
+    ['People', LABELS.size[lead.size] || lead.size],
+    ['Hours on it', LABELS.hours[lead.hours] || lead.hours],
+    ['Wants automated', LABELS.area[lead.area] || '—'],
     ['Best time', lead.preferredTime || '—'],
     ['Message', lead.message || '—'],
     ['Why this grade', (lead.reasons || []).join('; ')],
@@ -482,7 +503,7 @@ function notifyOwner_(lead, row, duplicateOf) {
 
   const html =
     `<div style="font-family:Arial,sans-serif;font-size:15px;color:#1d2e6e">` +
-    `<p style="margin:0 0 12px">New ${esc_(lead.source)} request from <b>${esc_(lead.institute)}</b>.</p>` +
+    `<p style="margin:0 0 12px">New ${esc_(lead.source)} request from <b>${esc_(lead.organisation)}</b>.</p>` +
     `<p style="margin:0 0 16px">` +
     button_(waLinkTo_(lead.phone, waText), `WhatsApp ${first}`, '#1c7a4d') + ' ' +
     button_('tel:+91' + String(lead.phone).slice(-10), 'Call', '#1d2e6e') + ' ' +
@@ -495,7 +516,7 @@ function notifyOwner_(lead, row, duplicateOf) {
 
   const options = {
     to: p.owner,
-    subject: `[${lead.grade}] New lead: ${lead.institute}, ${lead.cityName}`,
+    subject: `[${lead.grade}] New request: ${lead.organisation}, ${lead.cityName}`,
     body: plain,
     htmlBody: html,
     name: CONFIG.BRAND + ' website',
@@ -512,7 +533,7 @@ function sendAutoReply_(lead) {
     : '';
   const plain =
     `Hi ${first},\n\n` +
-    `Thanks for your request for ${lead.institute}. ${p.founder} will call or WhatsApp you within one working day ` +
+    `Thanks for your request for ${lead.organisation}. ${p.founder} will call or WhatsApp you within one working day ` +
     `to fix a time for a short demo.\n\n` +
     (wa ? `If you'd rather talk now, message us on WhatsApp: ${wa}\n\n` : '') +
     `${p.founder}\n${CONFIG.BRAND}\n\n` +
@@ -560,7 +581,7 @@ function remindUncontacted() {
   if (!due.length) return;
 
   const lines = due.map(({ r }) =>
-    `${r[col['Grade']]} | ${r[col['Name']]}, ${r[col['Institute']]} (${r[col['Area']]}) | ${r[col['Phone']]} | ` +
+    `${r[col['Grade']]} | ${r[col['Name']]}, ${r[col['Organisation']]} (${r[col['Area']]}) | ${r[col['Phone']]} | ` +
     `waiting since ${fmt_(r[col['Received at']])}`);
   MailApp.sendEmail({
     to: props_().owner,
@@ -589,7 +610,7 @@ function dailyDigest() {
 
   if (!newYesterday.length && !stillNew.length && !dueToday.length) return;
 
-  const line = (r) => `${r[col['Grade']]} | ${r[col['Name']]}, ${r[col['Institute']]} (${r[col['Area']]}) | ` +
+  const line = (r) => `${r[col['Grade']]} | ${r[col['Name']]}, ${r[col['Organisation']]} (${r[col['Area']]}) | ` +
     `${r[col['Phone']]} | ${r[col['Status']]}`;
   const grades = ['A', 'B', 'C'].map((g) => `${g}: ${newYesterday.filter((r) => r[col['Grade']] === g).length}`).join(', ');
 
@@ -686,17 +707,17 @@ function testLead() {
     receivedAt: new Date().toISOString(),
     name: 'Test Owner',
     role: 'owner',
-    institute: 'Test Classes',
+    organisation: 'Test Manufacturing Pvt Ltd',
+    kind: 'company',
     city: 'dombivli',
     cityName: 'Dombivli',
     phone: '9876543210',
     email: '',
-    students: '100-300',
-    enquiries: '50-150',
-    method: 'register',
-    interest: 'fees',
+    size: '50-200',
+    hours: '5-15',
+    area: 'reports',
     preferredTime: 'after 7 pm',
-    message: 'This is a test lead from testLead().',
+    message: 'This is a test request from testLead().',
     source: 'demo',
     pagePath: '/demo',
     referrer: '',

@@ -2,8 +2,8 @@ import Link from "next/link";
 import { site, whatsappLink } from "@/lib/site";
 
 export function CtaBand({
-  title = "See it working on your own phone",
-  body = "A 15-minute demo with sample enquiries. If it does not fit your institute, we will say so.",
+  title = "Tell me the job you are tired of",
+  body = "One call, half an hour. You will get a straight answer about whether it is worth automating — including 'no' if that is the answer.",
 }: {
   title?: string;
   body?: string;
@@ -16,11 +16,11 @@ export function CtaBand({
           <p className="mt-2 text-lg text-white/85">{body}</p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href="/demo" className="btn bg-white text-ink hover:bg-register">
-            Book a free demo
+          <Link href="/contact" className="btn bg-white text-ink hover:bg-register">
+            Start with a call
           </Link>
-          <a href={whatsappLink(`Hi, I'd like a ${site.name} demo for my institute.`)} className="btn btn-whatsapp">
-            WhatsApp us
+          <a href={whatsappLink(`Hi, I have a job at my company I'd like to automate.`)} className="btn btn-whatsapp">
+            WhatsApp me
           </a>
         </div>
       </div>

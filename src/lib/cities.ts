@@ -1,14 +1,19 @@
-// Service-area pages. Each city page must say something true and specific
-// about serving that area — never add a city just to rank for its name.
+// Service-area pages. Each page must say something true and specific about
+// working in that area — never add a place just to rank for its name.
+//
+// The corridor is real: I live in Dombivli, and everything here is reachable
+// on the Central line or a short drive. The MIDC estates at Dombivli,
+// Ambernath, Badlapur and Taloja, plus the offices at Wagle Estate, Airoli
+// and Mahape, are where the manual back-office work actually is.
 
 export const CITY_SLUGS = [
   "dombivli",
   "kalyan",
   "thane",
+  "navi-mumbai",
   "ulhasnagar",
   "ambernath",
   "badlapur",
-  "navi-mumbai",
 ] as const;
 
 export type CitySlug = (typeof CITY_SLUGS)[number];
@@ -27,20 +32,20 @@ export const cities: City[] = [
   {
     slug: "dombivli",
     name: "Dombivli",
-    localities: ["Dombivli East", "Dombivli West", "Phadke Road", "Manpada Road", "Thakurli", "Palava"],
+    localities: ["Dombivli East", "Dombivli West", "Dombivli MIDC", "Manpada Road", "Thakurli", "Palava"],
     travel: "Home base",
     intro:
-      "PraveshDesk is run from Dombivli. If your classes are near the station, on Phadke Road, along Manpada Road or out towards Palava, setup happens in person, usually on a weekend so batch timings are not disturbed.",
+      "I live and work in Dombivli. Whether you run a unit in the MIDC phase, an office near the station, or a coaching institute on Manpada Road, I can walk in, watch the job being done, and be back with a written quote the same week.",
     visitNote:
-      "Dombivli visits can be booked within the same week, including a quick follow-up visit after your first month if your staff want a refresher.",
+      "Dombivli visits happen at short notice, including evenings and weekends. For MIDC units I would rather come during a normal shift and see the process under real load than be shown a tidy version of it.",
     faq: [
       {
-        q: "Can you come to our class on a Sunday?",
-        a: "Yes. Most Dombivli setups happen on Saturday or Sunday mornings, when reception is quieter.",
+        q: "Can you come during working hours?",
+        a: "For the first visit, usually evenings or a weekend, because I have a full-time job. Once a build is running, deployment and handover are planned around your quiet hours, not mine.",
       },
       {
-        q: "We have one branch in the East and one in the West. Can both use the same list?",
-        a: "Yes. Each enquiry is tagged with its branch, and the owner sees both branches in one weekly report. Two branches are included in the Admission + Fees plan.",
+        q: "We are a small unit with two computers and a lot of registers. Is that too small?",
+        a: "No. Some of the best returns come from exactly that: one register, one person, one afternoon a week. If it turns out a formula would fix it, I will tell you that instead and charge nothing.",
       },
     ],
   },
@@ -50,117 +55,117 @@ export const cities: City[] = [
     localities: ["Kalyan West", "Kalyan East", "Khadakpada", "Shahad", "Titwala"],
     travel: "Two stations away",
     intro:
-      "If your Kalyan class takes enquiries at the counter, over the phone and from ads on the same busy evening, PraveshDesk puts every one of them into a single list, so the parent who said \"we'll think about it\" still gets a call two days later.",
+      "Kalyan businesses tend to have grown faster than their systems: more orders, more staff, and the same workbook that one person has maintained for years. That workbook is usually the first thing worth automating, and the first thing that stops the business when its owner is on leave.",
     visitNote:
-      "Kalyan is two stations from our base, so setup visits and follow-up visits are easy to fit around your batch timings.",
+      "Two stations from Dombivli, so a first visit and a follow-up visit are both easy to arrange around your working day.",
     faq: [
       {
-        q: "Our counsellor works only in the evening. Does the follow-up list still work?",
-        a: "Yes. The list shows whoever is due for a call that day, whenever the counsellor opens it. Overdue calls stay at the top until someone updates them.",
+        q: "Our data is spread across four Excel files. Is that a problem?",
+        a: "It is the normal starting point. Part of the audit is working out which file is the real source of truth, because usually one of them is and the others are copies.",
       },
       {
-        q: "We get many enquiries from Titwala and Shahad. Can we see which area they come from?",
-        a: "Yes. Add the area as a field on the enquiry form and the weekly report shows enquiries and admissions by area.",
+        q: "What if the person who built our spreadsheet leaves?",
+        a: "That is the risk worth pricing. Moving the logic into a documented job with a log, that anyone can run, is exactly the kind of build that pays for itself the first time somebody is unavailable.",
       },
     ],
   },
   {
     slug: "thane",
     name: "Thane",
-    localities: ["Thane West", "Thane East", "Naupada", "Vartak Nagar", "Ghodbunder Road", "Kopri"],
+    localities: ["Thane West", "Wagle Estate", "Ghodbunder Road", "Naupada", "Majiwada", "Kolshet"],
     travel: "About 30 minutes by local",
     intro:
-      "If your Thane institute runs Facebook or Instagram ads, PraveshDesk puts those lead-ad enquiries next to walk-ins and phone calls, so you can finally see which source turns into admissions.",
+      "Thane has the fullest mix: Wagle Estate manufacturing, offices along Ghodbunder Road, and growing software teams. The common thread is a finance or operations team assembling the same report pack every month, and an engineering team deploying by hand because nobody was hired to fix that.",
     visitNote:
-      "We visit Thane in person for the setup day and the staff training. Monthly reviews can be in person or over a video call, whichever you prefer.",
+      "I visit Thane in person for the audit and the handover. Progress reviews during a build work fine over a call, which keeps your time and my travel down.",
     faq: [
       {
-        q: "We already pay a marketing agency for ads. Will this replace them?",
-        a: "No. It makes their work measurable. You will see how many ad enquiries were called, booked a demo class and joined.",
+        q: "We have an IT team already. Where do you fit?",
+        a: "Usually on the work they know needs doing and never reach: pipelines, environments, backups that have never been restored, alert noise. I work with your team and hand over to them, not around them.",
       },
       {
-        q: "Can the weekly report go to our partners as well as the owner?",
-        a: "Yes. The weekly report can be emailed to up to three people at no extra cost.",
-      },
-    ],
-  },
-  {
-    slug: "ulhasnagar",
-    name: "Ulhasnagar",
-    localities: ["Camp 1", "Camp 2", "Camp 3", "Camp 4", "Camp 5", "Vithalwadi"],
-    travel: "A short trip via Kalyan",
-    intro:
-      "If your Ulhasnagar class has one person handling the front desk, PraveshDesk is built for exactly that: one simple list the front desk updates in seconds, and a morning list of who to call.",
-    visitNote:
-      "Ulhasnagar is a short trip from Dombivli via Kalyan, so we set up in person and come back for a check-in during your first month.",
-    faq: [
-      {
-        q: "Our receptionist is not comfortable with computers. Will she manage?",
-        a: "The daily work happens on a phone: open today's list, tap to call or WhatsApp, and pick the new status. Training takes about 30 minutes.",
-      },
-      {
-        q: "Can we write enquiries in Hindi or Marathi?",
-        a: "Yes. Names and notes can be typed in any language your staff use on their phone keyboard.",
-      },
-    ],
-  },
-  {
-    slug: "ambernath",
-    name: "Ambernath",
-    localities: ["Ambernath East", "Ambernath West"],
-    travel: "About 30 minutes via Kalyan",
-    intro:
-      "If word of mouth brings most of your Ambernath enquiries, every missed call-back is expensive. PraveshDesk records who referred each enquiry, so you can see which parents and students are sending new families your way.",
-    visitNote:
-      "We set up Ambernath classes in person. Setup day is booked a few days ahead so we can plan the visit around your schedule.",
-    faq: [
-      {
-        q: "Most of our enquiries come through referrals. Is this still useful?",
-        a: "Yes. Referral enquiries are usually the easiest to convert, so they deserve a reliable follow-up. You can also see which families refer most often.",
-      },
-      {
-        q: "Do we need a computer at the reception?",
-        a: "No. A phone is enough for the front desk. The owner can view the full list and report on a phone or a laptop.",
-      },
-    ],
-  },
-  {
-    slug: "badlapur",
-    name: "Badlapur",
-    localities: ["Badlapur East", "Badlapur West"],
-    travel: "About 40 minutes via Kalyan",
-    intro:
-      "If your Badlapur class gets more enquiries every season, PraveshDesk gives you a proper enquiry system before the register becomes three registers.",
-    visitNote:
-      "We come to Badlapur for the setup day. After go-live, most support happens on WhatsApp during our fixed support windows.",
-    faq: [
-      {
-        q: "We are small right now. Is it too early?",
-        a: "If you get fewer than about 20 enquiries a month, a register may be enough for now. We will tell you honestly during the demo.",
-      },
-      {
-        q: "Can we add fee reminders later?",
-        a: "Yes. Most classes start with enquiries and add fee tracking once the first list is working. Your data carries over.",
+        q: "Can you work with our existing cloud account and tools?",
+        a: "Yes, and I would prefer to. Everything is built in your accounts, with your credentials, so the handover is real rather than a promise.",
       },
     ],
   },
   {
     slug: "navi-mumbai",
     name: "Navi Mumbai",
-    localities: ["Airoli", "Ghansoli", "Vashi", "Nerul", "Belapur", "Kharghar"],
-    travel: "Visits grouped by week",
+    localities: ["Airoli", "Ghansoli", "Mahape", "Vashi", "Turbhe", "Taloja MIDC"],
+    travel: "About an hour",
     intro:
-      "If your Navi Mumbai institute runs branches in more than one node, PraveshDesk keeps each branch's enquiries separate for the counsellors and puts them together in one report for the owner.",
+      "Airoli, Mahape and Ghansoli have the IT parks; Taloja and Turbhe have the industrial estates. Both ends of that produce the same complaint — a person whose week is spent moving data between two systems that will never be integrated by their vendors.",
     visitNote:
-      "We group Navi Mumbai visits, so the setup day is usually booked about a week ahead. Monthly reviews happen over a video call unless you prefer a visit.",
+      "Navi Mumbai visits are planned rather than spontaneous, usually a single longer session for the audit instead of several short ones.",
     faq: [
       {
-        q: "We have branches in Vashi and Kharghar. How is that priced?",
-        a: "Two branches are included in the Admission + Fees plan. For three or more branches, we quote after seeing how enquiries move between them.",
+        q: "Our software vendor says integration is not possible. Is that the end of it?",
+        a: "Rarely. If the system can export a file, print a report, or reach a database, there is almost always a way to automate around it without touching the vendor's software or breaking your support contract.",
       },
       {
-        q: "Is in-person setup included for Navi Mumbai?",
-        a: "Yes. The setup visit and staff training are included in the setup fee.",
+        q: "Do you sign an NDA?",
+        a: "Yes, as a matter of course before any audit that touches real data. If your company has its own template, I will sign yours.",
+      },
+    ],
+  },
+  {
+    slug: "ulhasnagar",
+    name: "Ulhasnagar",
+    localities: ["Ulhasnagar 1 to 5", "Camp areas", "Netaji Chowk", "Shahad border"],
+    travel: "Three stations away",
+    intro:
+      "Trading and manufacturing businesses here often run on a paper trail that works perfectly well — until somebody has to total it, reconcile it, or produce it for an audit. Those three jobs are the ones worth automating first, and the paper can stay if you want it to.",
+    visitNote:
+      "Close enough for a same-week visit. I will usually ask to see a month's worth of the actual registers rather than a description of them.",
+    faq: [
+      {
+        q: "We do not want to change how our staff work. Can you still help?",
+        a: "Often yes. The best automations sit behind the existing habit: your staff keep filling the same register or form, and the counting, checking and reporting stop being done by a person.",
+      },
+      {
+        q: "Is our data safe if it goes into a system?",
+        a: "It goes into your accounts, not mine. I get access to build and maintain it, you can remove that access whenever you like, and nothing is copied anywhere else.",
+      },
+    ],
+  },
+  {
+    slug: "ambernath",
+    name: "Ambernath",
+    localities: ["Ambernath East", "Ambernath West", "Ambernath MIDC", "Morivali", "Shiv Mandir area"],
+    travel: "Four stations away",
+    intro:
+      "The MIDC estate here is full of units where production, dispatch and accounts each keep their own record, and a day a month disappears into making the three agree. That reconciliation is a textbook first build: clear rules, real cost, and an obvious moment when it has worked.",
+    visitNote:
+      "Worth a single longer visit rather than several short ones. Seeing a shift change and a dispatch day tells me more than any description of the process.",
+    faq: [
+      {
+        q: "Our production data is written on the shop floor. Does automation need new hardware?",
+        a: "Usually not. A simple form on a phone or a shared tablet, or even continuing on paper with one entry point, is enough to start. Hardware is a later decision, not a precondition.",
+      },
+      {
+        q: "How much disruption is there during a build?",
+        a: "Almost none. The automation is built and tested alongside your current process, and you switch over only once it has produced the same answers as the manual method for a period you are comfortable with.",
+      },
+    ],
+  },
+  {
+    slug: "badlapur",
+    name: "Badlapur",
+    localities: ["Badlapur East", "Badlapur West", "Badlapur MIDC", "Katrap", "Manjarli"],
+    travel: "Five stations away",
+    intro:
+      "Smaller units and a growing number of businesses run by people who commute into Mumbai and would rather not spend their Sunday on paperwork. Those are usually quick wins: one report, one reconciliation, one set of documents that stops needing a person.",
+    visitNote:
+      "Reachable on the same line, so a visit is straightforward. For smaller jobs an audit over a call plus a sample of your files is often enough to quote accurately.",
+    faq: [
+      {
+        q: "Can the whole thing be done remotely?",
+        a: "For a quick win, often yes — a call to watch the job over a screen share, then build and hand over remotely. For anything touching a shop floor or a physical register, I would rather come once and see it.",
+      },
+      {
+        q: "We only have one job worth automating. Is that enough to be worth your time?",
+        a: "Yes. One job is the normal starting point, and it is a better first project than a long list. If nothing else follows, that is a perfectly good outcome.",
       },
     ],
   },

@@ -1,26 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AutomationCatalogue, AutomationJumpLinks } from "@/components/AutomationCatalogue";
+import { AutomationCatalogue } from "@/components/AutomationCatalogue";
+import { BuildSteps } from "@/components/BuildSteps";
 import { FaqList } from "@/components/FaqList";
 import { JsonLd } from "@/components/JsonLd";
-import { LeadForm } from "@/components/LeadForm";
+import { RequestForm } from "@/components/RequestForm";
 import { PageIntro, Section } from "@/components/PageIntro";
-import {
-  automationCount,
-  automationGroups,
-  badCandidates,
-  buildSteps,
-  goodCandidates,
-  willNotBuild,
-} from "@/lib/automations";
-import { automationFaqs } from "@/lib/faqs";
+import { automationCount, badCandidates, goodCandidates, willNotBuild } from "@/lib/automations";
+import { generalFaqs } from "@/lib/faqs";
 import { pageMeta } from "@/lib/metadata";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta({
-  title: "Automation for coaching classes: name the job, we build it",
+  title: "What I automate: name the job and it gets built",
   description:
-    "Fees, attendance, report cards, receipts, parent updates, staff hours and owner reports — built around how your institute already works. Fixed price, quoted before we start.",
+    "Reports, data between systems, documents, reconciliation, deployments, cloud cost, monitoring, onboarding, approvals and institute back-office. Fixed price per job, built on your own systems.",
   path: "/automations",
 });
 
@@ -28,7 +22,7 @@ export default function AutomationsPage() {
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: automationFaqs.map((f) => ({
+    mainEntity: generalFaqs.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
@@ -39,103 +33,84 @@ export default function AutomationsPage() {
     <>
       <JsonLd data={faqJsonLd} />
 
-      <PageIntro title={<>Name the job. We build the thing that does it.</>}>
+      <PageIntro title="Name the job. I build the thing that does it.">
         <p>
-          Admission follow-up is where we start, because that is where the money leaks. It is not where we stop. If
-          someone at your institute does the same work every week by hand, it can almost certainly be done for them.
+          There is no product here to fit into. Everything is built for the process you actually run, on the systems you
+          already have. Below is what comes up most often — not a menu, a starting point for recognising your own week.
         </p>
       </PageIntro>
 
       <Section
         title="Start from the job, not the software"
-        intro="Most software asks you to change how you work. We do it the other way round: you tell us what eats your staff's evening, and we build exactly that."
+        intro="Most software asks you to change how you work, then charges you monthly for the privilege. This works the other way round."
       >
         <div className="grid gap-x-12 gap-y-8 md:grid-cols-3">
           <div className="border-t-2 border-ink py-5">
             <h3 className="text-xl font-bold">You already have the list</h3>
             <p className="mt-2 text-lg">
-              Every owner can name three jobs they wish would just happen. Those three are the brief. There is nothing
-              else to prepare.
+              Everyone can name three jobs they wish would just happen. Those three are the brief. There is nothing to
+              prepare and no document to write.
             </p>
           </div>
           <div className="border-t-2 border-ink py-5">
-            <h3 className="text-xl font-bold">It runs on your own account</h3>
+            <h3 className="text-xl font-bold">It runs on your systems</h3>
             <p className="mt-2 text-lg">
-              Your Google account, your sheets, your data. No new app for your staff to install and forget.
+              Your cloud, your accounts, your data. You get the code and the credentials, so nothing depends on me
+              staying around.
             </p>
           </div>
           <div className="border-t-2 border-ink py-5">
             <h3 className="text-xl font-bold">One fixed price</h3>
             <p className="mt-2 text-lg">
-              Agreed in writing before anything is built, and it does not move afterwards. If the job is not worth
-              automating, we say so for free.
+              Agreed in writing before anything is built, and it does not move. If a job is not worth automating, you
+              are told so for free.
             </p>
           </div>
         </div>
       </Section>
 
       <Section
-        title={`${automationCount} jobs we have already worked out`}
-        intro={
-          <>
-            These are the ones that come up in nearly every coaching class, grouped by whose day they ruin. Your own
-            version will differ in the details, and that is fine — the details are the build.
-          </>
-        }
+        title={`${automationCount} jobs, grouped by whose week they ruin`}
+        intro="Filter by what you are. Anything marked for both turns up in companies and institutes alike, because the paperwork does not care what the business does."
         className="border-t border-rule bg-register/60"
       >
-        <AutomationJumpLinks />
-        <div className="mt-12">
-          <AutomationCatalogue />
-        </div>
+        <AutomationCatalogue />
       </Section>
 
       <Section title="And the one that is only yours">
         <div className="max-w-3xl">
           <p className="text-xl leading-relaxed">
-            The list above is what we have seen. The job you are thinking about right now — the one no institute but
-            yours has, the one you assumed no software would ever cover — is the interesting one.
+            The list above is what I have seen. The job you are thinking about right now — the one specific to how your
+            business grew, the one you assumed no software would ever cover — is the interesting one.
           </p>
           <p className="mt-4 text-lg">
-            Describe it in a sentence and we will tell you honestly whether it can be built, roughly what it would take,
-            and whether it is worth your money. That conversation costs nothing.
+            Describe it in a sentence. You will get an honest answer about whether it can be built, roughly what it
+            would take, and whether it is worth your money. That conversation costs nothing.
           </p>
           <p className="mt-6">
             <Link href="#build" className="btn btn-primary">
-              Tell us the job
+              Tell me the job
             </Link>
           </p>
         </div>
       </Section>
 
-      <Section title="How a custom build goes" className="border-t border-rule bg-register/60">
-        <ol className="grid gap-x-12 md:grid-cols-2">
-          {buildSteps.map((s, i) => (
-            <li key={s.title} className="border-t border-rule py-6">
-              <div className="flex gap-4">
-                <span className="w-6 shrink-0 text-xl font-bold text-margin tabular-nums">{i + 1}</span>
-                <div>
-                  <h3 className="text-xl font-bold">{s.title}</h3>
-                  <p className="mt-2 text-lg">{s.body}</p>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-8 max-w-2xl border-l-2 border-stamp pl-4 text-lg">
-          Setup happens in person in {site.baseLocation}, {site.region} and nearby. Further away, we do it over a call
-          and a screen share.
+      <Section title="How a build goes" className="border-t border-rule bg-register/60">
+        <BuildSteps />
+        <p className="mt-10 max-w-2xl border-l-2 border-stamp pl-4 text-lg">
+          On-site work happens across {site.baseLocation}, Thane and Navi Mumbai. Further away, the same process works
+          over a call and a screen share — most builds never need me in the room after the first visit.
         </p>
       </Section>
 
       <Section
         title="Which jobs are worth automating"
-        intro="Not everything is. Being straight about this early saves you money and saves us both a wasted month."
+        intro="Not all of them. Being straight about this early saves your money and both our time."
       >
         <div className="grid gap-x-12 gap-y-10 md:grid-cols-2">
           <div>
             <h3 className="flex items-center gap-3 text-xl font-bold">
-              <span className="stamp">Good fit</span>
+              <span className="stamp">Worth it</span>
             </h3>
             <ul className="mt-5 space-y-3">
               {goodCandidates.map((g) => (
@@ -156,7 +131,7 @@ export default function AutomationsPage() {
             </ul>
           </div>
           <div>
-            <h3 className="text-xl font-bold">Leave it as it is</h3>
+            <h3 className="text-xl font-bold">Leave it alone</h3>
             <ul className="mt-5 space-y-3">
               {badCandidates.map((b) => (
                 <li key={b} className="flex gap-3 text-lg">
@@ -171,8 +146,8 @@ export default function AutomationsPage() {
         </div>
       </Section>
 
-      <Section title="What we will not build, whatever you offer" className="border-t border-rule bg-register/60">
-        <ul className="grid max-w-4xl gap-x-12 md:grid-cols-2">
+      <Section title="What I will not build, whatever you offer" className="border-t border-rule bg-register/60">
+        <ul className="grid max-w-5xl gap-x-12 md:grid-cols-2">
           {willNotBuild.map((w) => (
             <li key={w.title} className="border-t border-rule py-5">
               <h3 className="text-lg font-bold text-ink-deep">{w.title}</h3>
@@ -182,24 +157,20 @@ export default function AutomationsPage() {
         </ul>
       </Section>
 
-      <Section title="Questions owners ask about custom work">
-        <FaqList items={automationFaqs} />
+      <Section title="Questions I get asked">
+        <FaqList items={generalFaqs} />
       </Section>
 
       <Section
         id="build"
-        title="Tell us what to build"
-        intro="Pick the area, or choose 'something else' and describe it in your own words. We reply within one working day with a straight answer about whether it is worth doing."
+        title="Tell me what to build"
+        intro="Pick the area, or choose 'something else' and describe it in your own words."
         className="border-t border-rule bg-register/60"
       >
         <div className="max-w-3xl">
-          <LeadForm
+          <RequestForm
             source="automations"
             id="automations-form"
-            submitLabel="Send my request"
-            // On this page the choice is the point, so an unchanged default would
-            // be noise. "Not sure yet" honestly means they did not say.
-            defaultInterest="not-sure"
             messageLabel="Describe the job you want automated"
             messageHint="What happens today, who does it, and how often. A few lines is plenty."
           />

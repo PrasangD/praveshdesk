@@ -4,93 +4,70 @@ export type Faq = { q: string; a: string };
 
 export const generalFaqs: Faq[] = [
   {
-    q: "Do my staff need to learn new software?",
-    a: "Very little. Enquiries go into a simple form, and each morning your staff open one list on their phone showing who to call. Training takes about 30 minutes.",
+    q: "We do something odd that no software handles. Can you still automate it?",
+    a: "Usually, yes — that is the whole point of building it rather than selling you a product. Show me the job once. If the rules can be written down, it can almost always be built.",
   },
   {
-    q: "We already use WhatsApp. Why change?",
-    a: "You keep using WhatsApp. PraveshDesk tells your staff who to message and when, and the message still goes from your institute's own number.",
+    q: "Do you only work with one kind of business?",
+    a: "No. Companies, factories, agencies and institutes all end up with the same problem: a person doing a job that a schedule should be doing. The industry changes the details, not the approach.",
   },
   {
-    q: "Will you send bulk WhatsApp messages to parents?",
-    a: "No. Unofficial bulk messaging gets numbers blocked. Every message is sent by your staff, from your own WhatsApp, one tap at a time.",
+    q: "Our software vendor says integration is not possible.",
+    a: "Rarely the end of it. If a system can export a file, print a report, send an email or reach a database, it can usually be automated around without touching the vendor's software or breaking your support contract.",
   },
   {
-    q: "Where is our enquiry data stored?",
-    a: "In your institute's own Google account. We get access only to set it up and maintain it, and you can remove our access at any time.",
+    q: "What do you actually build it with?",
+    a: "Whatever suits the job and what you already run — scripts, scheduled jobs, pipelines, your existing cloud and your existing spreadsheets. I do not sell a platform, so there is no licence to keep paying for and nothing new to log in to unless it genuinely helps.",
   },
   {
-    q: "We use Classplus or Teachmint. Is this a replacement?",
-    a: "No. Keep using them for teaching and fees. PraveshDesk handles the part before a student joins: the enquiry, the follow-up and the admission decision.",
+    q: "Who owns what you build?",
+    a: "You do. It runs on your accounts, and the handover includes the code, the credentials and written notes. If you stop working with me, it keeps running.",
   },
   {
-    q: "What if we want to stop?",
-    a: `Tell us ${site.cancellationNotice} before your next billing date. The Google Sheet is already yours, so there is nothing to export or hand over.`,
+    q: "You have a full-time job. Will this get dropped?",
+    a: `I take ${site.concurrentBuilds} builds at a time and give each a date before it starts. That limit exists so the answer to this question stays no. If I cannot hit a date, you will hear it from me before you have to ask.`,
   },
   {
-    q: "Can you customise it for our process?",
-    a: "Yes, within the setup. Status names, form fields and the weekly report are set to match how your class works. Bigger changes are quoted before we start.",
+    q: "Will our staff have to learn something complicated?",
+    a: "No. Most automations end up as a form to fill, a list to open, or an email that arrives. If your team needs a manual to use it, it was built wrong.",
   },
   {
-    q: "Do you guarantee more admissions?",
-    a: "No. We make sure every enquiry is followed up and that you can see the numbers. Admissions still depend on your teaching, fees and counselling.",
+    q: "Is our data safe?",
+    a: "It stays in your accounts and systems, not mine. I get access to build and maintain it, you can remove that access whenever you like, and nothing is copied elsewhere. I sign an NDA before any audit that touches real data — yours, if you have one.",
   },
   {
-    q: "How long does setup take?",
-    a: "Three working days from the setup visit to go-live.",
+    q: "What if it breaks?",
+    a: "Anything I build tells you when it fails, rather than failing quietly. Fixes to my own work are free for 30 days after handover. After that, a care plan covers it, or you can call me as needed.",
+  },
+  {
+    q: "Are you going to tell us to fire people?",
+    a: "No, and I will not build something designed to do that quietly. The useful version of this is giving a team back a day a week. What you do with that day is your decision, made openly.",
   },
 ];
 
 export const pricingFaqs: Faq[] = [
   {
-    q: "Why is there a setup fee?",
-    a: "Setup includes a visit to your institute, building the form, list and report around your process, importing your current enquiries and training your staff.",
+    q: "Why pay for an audit before a build?",
+    a: "Because a price given before seeing the job is a guess, and guesses get padded. The audit is how the fixed price becomes real. It is credited in full against your first build, so if you go ahead it costs you nothing.",
   },
   {
-    q: "What does the monthly fee cover?",
-    a: "Keeping everything working, small changes, a monthly 30-minute review of your numbers, and WhatsApp support during our support windows.",
+    q: "What if the audit says nothing is worth automating?",
+    a: "Then you have saved a great deal more than the fee, and you keep the written report either way. It has happened, and it will happen again.",
+  },
+  {
+    q: "Can the price change halfway through?",
+    a: "Not on its own. The quoted number is fixed. If you want something outside the agreed scope, that is a separate number you agree to before I start it — never a surprise on the invoice.",
   },
   {
     q: "How do we pay?",
-    a: "By UPI or bank transfer against an invoice. The setup fee is paid before the setup visit. The monthly fee is paid at the start of each month.",
+    a: "UPI or bank transfer against an invoice. The audit is paid up front. Builds are half to start and half a week after go-live, once it has run on your real data.",
+  },
+  {
+    q: "Do we have to take a care plan?",
+    a: "No. The handover includes everything you need to run it yourself, and plenty of clients do. A care plan is for when you would rather it be somebody else's problem.",
   },
   {
     q: "Is there a long contract?",
-    a: `No. It is month to month. Stop with ${site.cancellationNotice} notice.`,
-  },
-];
-
-export const automationFaqs: Faq[] = [
-  {
-    q: "We do something odd that no software handles. Can you still automate it?",
-    a: "Usually, yes — that is the point of building it for you rather than selling you a product. Show us the job once. If it can be written down as rules, it can be built.",
-  },
-  {
-    q: "Do we have to take the admission system to get anything else?",
-    a: "No. Most institutes start with admissions because that is where the money leaks, but we will build only the fee tracker, or only the report cards, if that is your real problem.",
-  },
-  {
-    q: "How long does a custom automation take?",
-    a: "A small one is usually ready within a week of the quote being agreed. A bigger module that touches fees or results takes two to four weeks. You get a date with the quote.",
-  },
-  {
-    q: "What does a custom build cost?",
-    a: "A fixed price, quoted in writing before anything is built, based on how long it takes. It does not change once we start. If we think the job is not worth automating, we will say so and charge nothing.",
-  },
-  {
-    q: "What happens to it if we stop working with you?",
-    a: `It keeps running. Everything sits in your institute's own Google account, so the sheets, forms and documents stay yours. Tell us ${site.cancellationNotice} before your next billing date and we remove our access.`,
-  },
-  {
-    q: "Can it work with the software we already use?",
-    a: "Often, yes, if that software can export a file or has a way to connect. We will check before quoting rather than promise it in advance. We do not replace your accounting or teaching software.",
-  },
-  {
-    q: "Will our staff have to learn something complicated?",
-    a: "No. Almost everything ends up as a form to fill, a list to open, or an email that arrives. If your staff need a manual to use it, we built it wrong.",
-  },
-  {
-    q: "Is our students' and parents' data safe?",
-    a: "It stays in your Google account, not ours. We get access to set it up and maintain it, you can remove that access at any time, and we never move your data to another institute or use it for anything else.",
+    a: `No. Builds are one-off. Care plans are month to month — stop with ${site.cancellationNotice} notice.`,
   },
 ];

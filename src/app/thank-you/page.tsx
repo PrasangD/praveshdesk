@@ -16,21 +16,24 @@ export default function ThankYouPage() {
   return (
     <section className="container-page py-20 sm:py-28">
       <span className="stamp text-base">Received</span>
-      <Suspense fallback={<h1 className="mt-6 text-4xl font-extrabold tracking-tight sm:text-5xl">Thanks. We&apos;ve got your request.</h1>}>
+      <Suspense fallback={<h1 className="mt-6 text-4xl font-extrabold tracking-tight sm:text-5xl">Thanks. I&apos;ve got your request.</h1>}>
         <ThanksHeading />
       </Suspense>
       <div className="mt-6 max-w-2xl space-y-4 text-xl">
         <p>
-          We&apos;ll call or WhatsApp you from {site.phone} to fix a time. {site.replyPromise}
+          I&apos;ll call or WhatsApp you from {site.phone} to fix a time. {site.replyPromise}
         </p>
-        <p>If you&apos;d rather talk now, send us a WhatsApp message and we&apos;ll pick it up from there.</p>
+        <p>
+          If you&apos;d rather talk now, send a WhatsApp message and we can pick it up from there. If the job turns out
+          not to be worth automating, you&apos;ll hear that too.
+        </p>
       </div>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <a className="btn btn-whatsapp" href={whatsappLink(`Hi, I just requested a ${site.name} demo on the website.`)}>
-          Message us on WhatsApp
+        <a className="btn btn-whatsapp" href={whatsappLink(`Hi, I just sent a request on the ${site.name} website.`)}>
+          Message on WhatsApp
         </a>
         <Link href="/how-it-works" className="btn btn-secondary">
-          Read how setup works
+          Read how a build works
         </Link>
       </div>
     </section>

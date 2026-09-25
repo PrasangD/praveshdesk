@@ -6,17 +6,30 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = pageMeta({
   title: "About",
-  description: `${site.name} is a small, founder-run service based in Dombivli that sets up enquiry follow-up systems for coaching classes.`,
+  description: `${site.name} is one ${site.founderRole} in ${site.baseLocation} who automates the jobs businesses still do by hand.`,
   path: "/about",
 });
 
-// EDIT THIS PAGE: replace the story with your own words once your first
-// conversations with institutes have happened. Keep it true and specific.
+// EDIT THIS PAGE: the story below is a draft built from what you told me.
+// Put it in your own words once you have had your first few conversations,
+// and only claim what is true.
 const principles = [
-  { title: "Small on purpose", body: "One workflow, done well. We would rather your staff use a simple list every day than ignore a big system." },
-  { title: "Your data is yours", body: "Everything lives in your institute's Google account. We keep only the access we need, and you can remove it any time." },
-  { title: "Clear scope, clear price", body: "You know what is included before you pay. Anything extra is quoted first, never billed as a surprise." },
-  { title: "Fixed support windows", body: `We answer on WhatsApp during set hours (${site.supportWindows}), and we tell you in advance if that ever changes.` },
+  {
+    title: "One job at a time",
+    body: "A single automation that works beats a platform that half works. Every engagement starts with one process and earns the right to the next.",
+  },
+  {
+    title: "You own what I build",
+    body: "It runs on your systems, you get the code and the credentials, and the handover assumes I might not be around. That is the test of whether it was built properly.",
+  },
+  {
+    title: "A fixed price, agreed first",
+    body: "You know the number and the date before anything starts. Scope changes are a new number you agree to, never a surprise at the end.",
+  },
+  {
+    title: "The honest no",
+    body: "Some jobs should not be automated, and some should just be done less often. Saying so costs me a sale and is the reason the rest of this is worth believing.",
+  },
 ];
 
 export default function AboutPage() {
@@ -24,40 +37,47 @@ export default function AboutPage() {
     <>
       <PageIntro title={`About ${site.name}`}>
         <p>
-          {site.name} is a small, founder-run service based in {site.baseLocation}. We help coaching classes make sure
-          every enquiry gets followed up.
+          One {site.founderRole} in {site.baseLocation}, automating the work that businesses and institutes still do by
+          hand every week.
         </p>
       </PageIntro>
 
       <Section>
         <div className="max-w-2xl space-y-5 text-lg">
           <p>
-            I&apos;m {site.founderName}, a software developer from {site.baseLocation}. Talking to coaching class owners
-            around Dombivli and Kalyan, I kept hearing the same thing: enquiries were being written down, but nobody could
-            say how many were ever called back.
+            I&apos;m {site.founderName}. I work as a {site.founderRole}, which in practice means I spend my days making
+            sure things happen without anyone needing to remember to do them — deployments, checks, reports, alerts, the
+            small reliable machinery that keeps software running.
           </p>
           <p>
-            The fix did not need expensive software. It needed one list that reception can fill in quickly, a morning
-            list of who to call, and a weekly report the owner actually reads. So that is what {site.name} is.
+            The same machinery works outside software, and almost nobody applies it there. Every business I have looked
+            at closely has at least one person whose week is spent doing something a schedule should be doing:
+            assembling the same report, reconciling the same two lists, typing the same record into a second system,
+            producing the same forty documents.
           </p>
           <p>
-            I set up every institute myself, in person, and I review the numbers with each owner every month.
+            So that is what this is. Not a product, not a platform, and not a subscription for software you did not ask
+            for. You name the job, I quote a fixed price, I build it on your systems, and I hand it over with the code.
+          </p>
+          <p>
+            I do this alongside a full-time job, which is why I take {site.concurrentBuilds} builds at a time and say so
+            on the pricing page. It is a real limit, and it is the reason I can promise a date and keep it.
           </p>
         </div>
       </Section>
 
-      <Section title="How we work" className="border-t border-rule bg-register/60">
+      <Section title="How I work" className="border-t border-rule bg-register/60">
         <ul className="grid gap-x-12 gap-y-8 md:grid-cols-2">
           {principles.map((p) => (
             <li key={p.title} className="border-t border-rule pt-4">
-              <h3 className="text-xl font-bold">{p.title}</h3>
+              <h2 className="text-xl font-bold">{p.title}</h2>
               <p className="mt-2 text-lg">{p.body}</p>
             </li>
           ))}
         </ul>
       </Section>
 
-      <CtaBand title="Want to see if it fits your institute?" />
+      <CtaBand title="Got a job in mind?" />
     </>
   );
 }

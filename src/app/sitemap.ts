@@ -7,16 +7,15 @@ import { site } from "@/lib/site";
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
     ["", 1.0],
-    ["/features", 0.8],
     ["/automations", 0.9],
+    ["/demo", 0.9],
     ["/how-it-works", 0.8],
     ["/pricing", 0.8],
-    ["/solutions", 0.7],
+    ["/automation-services", 0.8],
     ["/calculator", 0.7],
-    ["/demo", 0.9],
-    ["/coaching-classes", 0.8],
-    ["/about", 0.5],
+    ["/who-its-for", 0.7],
     ["/contact", 0.6],
+    ["/about", 0.5],
     ["/privacy", 0.2],
     ["/terms", 0.2],
   ] as const;
@@ -24,6 +23,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   return [
     ...staticRoutes.map(([path, priority]) => ({ url: `${site.url}${path}`, lastModified: now, priority })),
-    ...cities.map((c) => ({ url: `${site.url}/coaching-classes/${c.slug}`, lastModified: now, priority: 0.8 })),
+    ...cities.map((c) => ({ url: `${site.url}/automation-services/${c.slug}`, lastModified: now, priority: 0.8 })),
   ];
 }

@@ -11,8 +11,8 @@ export function Footer() {
         <div className="max-w-sm">
           <Logo />
           <p className="mt-4 text-base">
-            Done-for-you software for coaching classes: admission follow-up first, then whatever else is still done by
-            hand. Based in {site.baseLocation}, {site.region}.
+            One {site.founderRole} automating the work companies and institutes still do by hand. Based in{" "}
+            {site.baseLocation}, {site.region}.
           </p>
           <p className="mt-3 text-base">{site.replyPromise}</p>
         </div>
@@ -22,7 +22,7 @@ export function Footer() {
           <ul className="mt-3 space-y-2 text-base">
             <li>
               <a className="text-ink underline" href={whatsappLink(`Hi, I'd like to know more about ${site.name}.`)}>
-                WhatsApp us
+                WhatsApp me
               </a>
             </li>
             <li>
@@ -35,11 +35,11 @@ export function Footer() {
         </div>
 
         <div>
-          <h2 className="text-base font-bold">Areas</h2>
+          <h2 className="text-base font-bold">Where I work</h2>
           <ul className="mt-3 space-y-2 text-base">
             {cities.map((c) => (
               <li key={c.slug}>
-                <Link className="text-graphite underline decoration-rule hover:text-ink" href={`/coaching-classes/${c.slug}`}>
+                <Link className="text-graphite underline decoration-rule hover:text-ink" href={`/automation-services/${c.slug}`}>
                   {c.name}
                 </Link>
               </li>
@@ -52,8 +52,9 @@ export function Footer() {
           <ul className="mt-3 space-y-2 text-base">
             {[
               ["/about", "About"],
-              ["/automations", "What we can automate"],
-              ["/solutions", "Who it's for"],
+              ["/automations", "What I automate"],
+              ["/demo", "See it run"],
+              ["/who-its-for", "Who it's for"],
               ["/contact", "Contact"],
               ["/privacy", "Privacy policy"],
               ["/terms", "Terms of service"],

@@ -4,15 +4,15 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { cities, type CitySlug } from "@/lib/cities";
 import {
-  ENQUIRY_OPTIONS,
-  INTEREST_OPTIONS,
-  METHOD_OPTIONS,
+  AREA_OPTIONS,
+  HOURS_OPTIONS,
+  KIND_OPTIONS,
   ROLE_OPTIONS,
-  STUDENT_OPTIONS,
+  SIZE_OPTIONS,
+  type Area,
   type CalculatorSnapshot,
-  type Interest,
-  type LeadSource,
-} from "@/lib/lead-options";
+  type RequestSource,
+} from "@/lib/request-options";
 import { site, whatsappLink } from "@/lib/site";
 import { Turnstile } from "./Turnstile";
 import { readAttribution } from "./UtmCapture";
@@ -20,57 +20,57 @@ import { readAttribution } from "./UtmCapture";
 const ENDPOINT = process.env.NEXT_PUBLIC_LEADS_ENDPOINT ?? "";
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
-function newLeadId() {
+function newRequestId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 /** Quick checks in the browser; the Apps Script repeats them before saving. */
-function checkFields(p: { name: string; institute: string; city: string; phone: string; email: string; consent: boolean }) {
+function checkFields(p: { name: string; organisation: string; city: string; phone: string; email: string; consent: boolean }) {
   const errors: Record<string, string> = {};
   if (p.name.length < 2) errors.name = "Enter your name";
-  if (p.institute.length < 2) errors.institute = "Enter your institute's name";
-  if (!p.city) errors.city = "Choose your area";
+  if (p.organisation.length < 2) errors.organisation = "Enter your organisation's name";
+  if (!p.city) errors.city = "Choose where you are";
   let digits = p.phone.replace(/\D/g, "");
   if (digits.length === 12 && digits.startsWith("91")) digits = digits.slice(2);
   if (digits.length === 11 && digits.startsWith("0")) digits = digits.slice(1);
   if (!/^[6-9]\d{9}$/.test(digits)) errors.phone = "Enter a 10-digit mobile number";
   if (p.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) errors.email = "Enter a valid email, or leave it blank";
-  if (!p.consent) errors.consent = "Tick the box so we can contact you about your request";
+  if (!p.consent) errors.consent = "Tick the box so I can reply to you";
   return errors;
 }
 
 type Props = {
-  source: LeadSource;
+  source: RequestSource;
   defaultCity?: CitySlug;
   calculator?: CalculatorSnapshot;
   submitLabel?: string;
   showPreferredTime?: boolean;
   id?: string;
-  /** The automations page asks for the job itself, not just "anything else". */
+  /** Pages about a specific job ask for the job itself, not "anything else". */
   messageLabel?: React.ReactNode;
   messageHint?: string;
-  defaultInterest?: Interest;
+  defaultArea?: Area;
 };
 
 type Status = "idle" | "sending" | "error";
 
-export function LeadForm({
+export function RequestForm({
   source,
   defaultCity,
   calculator,
-  submitLabel = "Book my free demo",
+  submitLabel = "Send my request",
   showPreferredTime = true,
-  id = "lead-form",
+  id = "request-form",
   messageLabel,
   messageHint,
-  defaultInterest,
+  defaultArea,
 }: Props) {
   const router = useRouter();
   const startedAt = useRef(Date.now());
   // Same ID across retries, so a request that reached the Sheet but lost its
   // response is not saved twice (the Apps Script skips IDs it has seen).
-  const leadId = useRef(newLeadId());
+  const requestId = useRef(newRequestId());
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState("");
@@ -89,17 +89,17 @@ export function LeadForm({
     const attribution = readAttribution();
 
     const payload = {
-      id: leadId.current,
+      id: requestId.current,
       name: text("name"),
+      kind: text("kind") || "company",
       role: text("role") || "owner",
-      institute: text("institute"),
+      organisation: text("organisation"),
       city: text("city"),
       phone: text("phone"),
       email: text("email"),
-      students: text("students") || "not-sure",
-      enquiries: text("enquiries") || "not-sure",
-      method: text("method"),
-      interest: text("interest") || "not-sure",
+      size: text("size") || "not-sure",
+      hours: text("hours") || "not-sure",
+      area: text("area") || "not-sure",
       preferredTime: text("preferredTime"),
       message: text("message"),
       consent: fd.get("consent") === "on",
@@ -131,7 +131,7 @@ export function LeadForm({
 
     if (!ENDPOINT) {
       if (process.env.NODE_ENV === "development") {
-        console.info("[lead] NEXT_PUBLIC_LEADS_ENDPOINT is empty; this lead was not sent:", payload);
+        console.info("[request] NEXT_PUBLIC_LEADS_ENDPOINT is empty; this was not sent:", payload);
         return goToThanks();
       }
       return fail("The form is not connected yet.");
@@ -160,9 +160,7 @@ export function LeadForm({
   }
 
   const err = (name: string) =>
-    errors[name]
-      ? { "aria-invalid": true as const, "aria-describedby": `${id}-${name}-error` }
-      : {};
+    errors[name] ? { "aria-invalid": true as const, "aria-describedby": `${id}-${name}-error` } : {};
   const errorText = (name: string) =>
     errors[name] ? (
       <p id={`${id}-${name}-error`} className="field-error">
@@ -196,21 +194,38 @@ export function LeadForm({
       </div>
 
       <div>
-        <label htmlFor={`${id}-institute`} className="field-label">Institute name</label>
-        <input id={`${id}-institute`} name="institute" className="field" autoComplete="organization" required maxLength={120} {...err("institute")} />
-        {errorText("institute")}
+        <label htmlFor={`${id}-organisation`} className="field-label">Company or institute</label>
+        <input
+          id={`${id}-organisation`}
+          name="organisation"
+          className="field"
+          autoComplete="organization"
+          required
+          maxLength={120}
+          {...err("organisation")}
+        />
+        {errorText("organisation")}
       </div>
 
       <div>
-        <label htmlFor={`${id}-city`} className="field-label">Area</label>
+        <label htmlFor={`${id}-city`} className="field-label">Where you are</label>
         <select id={`${id}-city`} name="city" className="field" required defaultValue={defaultCity ?? ""} {...err("city")}>
-          <option value="" disabled>Choose your area</option>
+          <option value="" disabled>Choose an area</option>
           {cities.map((c) => (
             <option key={c.slug} value={c.slug}>{c.name}</option>
           ))}
           <option value="other">Somewhere else</option>
         </select>
         {errorText("city")}
+      </div>
+
+      <div>
+        <label htmlFor={`${id}-kind`} className="field-label">You are</label>
+        <select id={`${id}-kind`} name="kind" className="field" defaultValue="company">
+          {KIND_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
       </div>
 
       <div>
@@ -223,31 +238,34 @@ export function LeadForm({
       </div>
 
       <div>
-        <label htmlFor={`${id}-students`} className="field-label">Students at your institute</label>
-        <select id={`${id}-students`} name="students" className="field" defaultValue="not-sure">
-          {STUDENT_OPTIONS.map((o) => (
+        <label htmlFor={`${id}-size`} className="field-label">How many people</label>
+        <select id={`${id}-size`} name="size" className="field" defaultValue="not-sure">
+          {SIZE_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
       </div>
 
       <div>
-        <label htmlFor={`${id}-enquiries`} className="field-label">Enquiries in a busy month</label>
-        <select id={`${id}-enquiries`} name="enquiries" className="field" defaultValue="not-sure">
-          {ENQUIRY_OPTIONS.map((o) => (
+        <label htmlFor={`${id}-hours`} className="field-label">Time the job takes now</label>
+        <select id={`${id}-hours`} name="hours" className="field" defaultValue="not-sure">
+          {HOURS_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
       </div>
 
-      <div>
-        <label htmlFor={`${id}-method`} className="field-label">Where you note enquiries today</label>
-        <select id={`${id}-method`} name="method" className="field" defaultValue="">
-          <option value="">Choose one (optional)</option>
-          {METHOD_OPTIONS.map((o) => (
+      <div className="sm:col-span-2">
+        <label htmlFor={`${id}-area`} className="field-label">What would you like automated first?</label>
+        <select id={`${id}-area`} name="area" className="field" defaultValue={defaultArea ?? "not-sure"}>
+          {AREA_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
+        <p className="field-hint mt-1">
+          Anything on this list, or something that is not on it. Ask, and you will get a straight answer about whether
+          it can be built.
+        </p>
       </div>
 
       <div>
@@ -268,22 +286,10 @@ export function LeadForm({
       )}
 
       <div className="sm:col-span-2">
-        <label htmlFor={`${id}-interest`} className="field-label">What would you like sorted out first?</label>
-        <select id={`${id}-interest`} name="interest" className="field" defaultValue={defaultInterest ?? "admissions"}>
-          {INTEREST_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
-        <p className="field-hint mt-1">
-          Anything on this list, or something that is not. Ask and we will tell you if it can be built.
-        </p>
-      </div>
-
-      <div className="sm:col-span-2">
         <label htmlFor={`${id}-message`} className="field-label">
           {messageLabel ?? (
             <>
-              Anything we should know? <span className="font-normal text-muted">(optional)</span>
+              Describe the job <span className="font-normal text-muted">(optional, but it helps)</span>
             </>
           )}
         </label>
@@ -301,8 +307,8 @@ export function LeadForm({
         <label className="flex items-start gap-3 text-base">
           <input type="checkbox" name="consent" required className="mt-1 h-5 w-5 shrink-0 accent-ink" {...err("consent")} />
           <span>
-            {site.name} may call or WhatsApp me about this request. My details are used only for this, as described in the{" "}
-            <a href="/privacy" className="text-ink underline">privacy policy</a>.
+            {site.founderName} may call, email or WhatsApp me about this request. My details are used only for this, as
+            described in the <a href="/privacy" className="text-ink underline">privacy policy</a>.
           </span>
         </label>
         {errorText("consent")}
@@ -318,15 +324,15 @@ export function LeadForm({
         {formError && (
           <div role="alert" className="mb-4 rounded-md border border-margin/40 bg-margin/5 p-3 text-base text-ink-deep">
             {formError}{" "}
-            <a className="font-semibold text-ink underline" href={whatsappLink(`Hi, I tried to book a ${site.name} demo on the website.`)}>
-              Message us on WhatsApp
+            <a className="font-semibold text-ink underline" href={whatsappLink("Hi, I tried to send a request on the website.")}>
+              Message me on WhatsApp
             </a>
           </div>
         )}
         <button type="submit" className="btn btn-primary w-full sm:w-auto" disabled={status === "sending"}>
           {status === "sending" ? "Sending…" : submitLabel}
         </button>
-        <p className="mt-3 text-sm text-muted">{site.replyPromise} No spam, no sales calls you did not ask for.</p>
+        <p className="mt-3 text-sm text-muted">{site.replyPromise} No mailing list, no follow-up you did not ask for.</p>
       </div>
     </form>
   );

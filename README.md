@@ -1,72 +1,89 @@
-# PraveshDesk website (for clients)
+# PraveshDesk
 
-The public website that coaching-class owners see: what PraveshDesk does, the automations it can
-build for them, pricing, area pages for Dombivli, Kalyan, Thane and nearby, a calculator, and a
-demo form.
+Automation, built to order, for companies and institutes around Dombivli, Thane and Navi Mumbai.
+One process at a time, a fixed price per job, built on the client's own systems and handed over
+with the code.
 
-The offer has two halves, and the site is built to say both:
+This repository holds three separate things:
 
-1. **Admission enquiries and follow-up** — already built, shown working in the demo, priced as a
-   plan on `/pricing`.
-2. **Anything else the institute still does by hand** — fees, attendance, report cards, receipts,
-   staff hours, owner reports, or a job specific to that institute. Catalogued on `/automations`
-   and quoted per job, not sold as a plan.
+| | What it is | Who sees it |
+| --- | --- | --- |
+| **`src/`** | The public website | Anyone |
+| **`demo-pack/`** | A working automation you run on a laptop in front of a prospect | Clients, in the room |
+| **`pitch-kit/`** | Outreach, discovery, audit, proposal and quoting templates | Only you |
 
-Running cost: ₹0. It is a fully static Next.js site hosted free on Cloudflare Pages. The demo
-form posts straight to your own Google Apps Script, which saves each request in a Google Sheet
-and emails you.
+Running cost: ₹0. The website is a fully static Next.js site hosted free on Cloudflare Pages. The
+contact forms post straight to your own Google Apps Script, which saves each request in a Google
+Sheet and emails you.
 
 ```
-Visitor ──> static page on Cloudflare Pages (demo / contact / calculator / area page form)
+Visitor ──> static page on Cloudflare Pages (any page with a form)
               │  browser POST (plain text, no server in between)
               ▼
         Google Apps Script web app
               ├─ checks fields, spam traps, Cloudflare Turnstile, hourly limits
               ├─ scores the request A/B/C and saves it to the "Leads" sheet
               ├─ emails you instantly with one-tap WhatsApp / call buttons
-              ├─ auto-replies to the owner (if they gave an email)
+              ├─ auto-replies to the sender (if they gave an email)
               └─ reminders, 8 am digest, Monday summary
 ```
 
-This repo is only the client website. Finding institutes to approach is a separate tool:
-`praveshdesk-prospects`.
+## The offer the site sells
+
+1. **An automation audit, ₹9,999.** Half a day watching how the work is really done, then a
+   written report: each process costed, what to automate, what to fix without code, what to leave
+   alone. Credited in full against the first build.
+2. **Builds at a fixed price.** Quick win ₹18,000–₹45,000. Connected module ₹60,000–₹1,80,000.
+   System from ₹2,50,000, staged.
+3. **Care plans, optional,** from ₹4,999/month.
+
+Everything runs on the client's systems and is handed over with the code, the credentials and
+written notes. `src/lib/pricing.ts` is the single source of truth for every number above — change
+it there and the whole site follows.
 
 ## What's inside
 
 ```
-src/app/                 pages (home, features, automations, solutions, pricing, how-it-works,
-                         about, contact, demo, calculator, thank-you, privacy, terms, 404)
-src/app/coaching-classes/[city]/   7 area pages, generated at build time
-src/components/          Header, Footer, RegisterHero, LeadForm, Turnstile, LeakCalculator,
-                         AutomationCatalogue, ...
-src/lib/site.ts          brand name, support windows, cancellation notice   <-- edit first
-src/lib/cities.ts        area page content                                  <-- edit carefully
-src/lib/automations.ts   the automation catalogue + what we refuse to build <-- your sales list
-src/lib/pricing.ts faqs.ts features.ts lead-options.ts
+src/app/                 pages (home, automations, demo, how-it-works, pricing, who-its-for,
+                         calculator, about, contact, thank-you, privacy, terms, 404)
+src/app/automation-services/[city]/   7 service-area pages, generated at build time
+src/components/          Header, Footer, RunLog, RequestForm, DemoRunner, SavingsCalculator,
+                         AutomationCatalogue, PricingPlans, Turnstile, ...
+src/lib/site.ts          brand name, contact details, capacity              <-- edit first
+src/lib/automations.ts   the automation catalogue + what you refuse to build <-- your sales list
+src/lib/pricing.ts       every price on the site                             <-- your rate card
+src/lib/sectors.ts       who it's for, and who it isn't
+src/lib/cities.ts        service-area page content                           <-- edit carefully
+src/lib/savings.ts       the arithmetic behind /calculator
+src/lib/demo-pipeline.ts the automation that runs live on /demo
+src/lib/faqs.ts request-options.ts metadata.ts
 public/_headers          security headers for Cloudflare Pages
-apps-script/Code.gs      lead inbox: validation, spam checks, scoring, emails, reminders
-apps-script/appsscript.json
+apps-script/Code.gs      request inbox: validation, spam checks, scoring, emails, reminders
+demo-pack/               the offline demo — see demo-pack/README.md
+pitch-kit/               the sales material — see pitch-kit/README.md
 ```
 
 ### The automation catalogue
 
-`src/lib/automations.ts` is the one file to edit as you learn what institutes actually ask for.
-It holds:
+`src/lib/automations.ts` is the file to edit as you learn what clients actually ask for. Ten
+groups — reports, data between systems, documents, spreadsheets, deployments, cloud cost,
+monitoring, joiners and leavers, approvals, and institute back-office — each a list of
+`{ title, body }`: the manual job named the way the person stuck with it would say it, and what
+replaces it.
 
-- `automationGroups` — nine areas (admissions, fees, attendance, tests, parents, staff,
-  documents, owner reports, growth), each a list of `{ title, body }`: the manual job named the
-  way an owner says it, and what replaces it. The page counts these itself, so adding one updates
-  the headline number everywhere.
-- `buildSteps` — how a custom build runs, from watching the job to payment after a week's use.
-- `goodCandidates` / `badCandidates` — the honest test for whether a job is worth automating.
-- `willNotBuild` — bulk WhatsApp through unofficial tools, anything that impersonates your staff,
-  scraping other institutes' data, and any system only we can maintain. Keep this list; it is the
-  reason the rest of the page is believable.
+Each group is tagged `audience: "company" | "institute" | "both"`, which drives the filter on
+`/automations`. The page counts the items itself, so adding one updates every headline number on
+the site.
 
-Two rules when editing it. Every line must be a job someone does **today**, not a feature name.
-And whatever you add here must not contradict `notIncluded` in `src/lib/features.ts` or `notFits`
-in `src/app/solutions/page.tsx` — those say what is out of scope, and a catalogue entry that
-promises something they rule out will be spotted in the first sales call.
+Three rules when editing it:
+
+1. **Every line is a job somebody does today**, not a feature name. "Copying yesterday's totals
+   into a slide" beats "reporting automation".
+2. **Keep `willNotBuild`.** Impersonation, unofficial bulk messaging, scraping other people's
+   data, quiet redundancy automation, and any system only you can maintain. It is the reason the
+   rest of the page is believed.
+3. **Do not contradict `notFor` in `src/lib/sectors.ts`.** That list says who this is not for, and
+   a catalogue entry promising something it rules out will be caught on the first call.
 
 ## 1. Run locally
 
@@ -79,24 +96,33 @@ npm run dev                  # http://localhost:3000
 With `NEXT_PUBLIC_LEADS_ENDPOINT` empty, the form logs the request in the browser console and
 shows the thank-you page, so you can work on the site before the Sheet exists.
 
-`npm run build` writes the finished site to `out/`. Run it before every push.
+`npm run build` writes the finished site to `out/`. `npm run typecheck` before every push.
 
 ## 2. Make it yours
 
-- `.env.local` / Cloudflare environment variables: phone, WhatsApp number, email, your name.
+- **`.env.local` / Cloudflare environment variables:** phone, WhatsApp number, email, your name.
   A Gmail address is fine until you have a domain.
-- `src/app/about/page.tsx`: the founder story is a draft. Rewrite it in your own words and only
-  claim what is true.
-- `src/lib/pricing.ts`: keep `gstNote` accurate. `buildSizes` deliberately carries no rupee
-  figures — custom work is quoted per job. If you decide to publish starting prices, put them
-  there rather than in the page.
-- `src/lib/automations.ts`: the catalogue is a sales list, not a promise of stock features. Cut
-  anything you are not willing to build within the stated time.
-- `privacy` and `terms` are plain-language drafts. Get them reviewed by a lawyer.
-- Check the name is free before you print anything: web search, domain search, and the
-  trademark search on the IP India website. Renaming is one edit in `src/lib/site.ts`.
+- **`src/lib/site.ts`:** `founderName`, `founderRole`, support windows, and `concurrentBuilds` —
+  the number of builds you take at a time, which appears on the pricing and about pages as an
+  honest capacity limit.
+- **`src/app/about/page.tsx`:** the story is a draft. Rewrite it in your own words after your
+  first few conversations, and only claim what is true.
+- **`src/lib/pricing.ts`:** your rate card. Keep `gstNote` accurate. `pitch-kit/06-quoting.md`
+  explains how the bands and the ₹12,000 day rate relate, so change them together.
+- **`privacy` and `terms`** are plain-language drafts covering audits, fixed-price builds, IP and
+  handover. Get them reviewed by a lawyer before relying on them.
 
-## 3. Lead inbox (Google Sheet + Apps Script), about 15 minutes
+### A note on the name
+
+**PraveshDesk** means, roughly, *admission desk* — the name comes from an earlier version of this
+business that sold admission enquiry follow-up to coaching classes. It no longer matches what the
+site sells, and it reads as education-specific to exactly the corporate buyers you now want.
+
+Renaming is one edit to `name` in `src/lib/site.ts` plus a new logo mark in
+`src/components/Logo.tsx`. If you do it, check the name is free first: web search, domain search,
+and the trademark search on the IP India website. Do it before you print the one-pager.
+
+## 3. Request inbox (Google Sheet + Apps Script), about 15 minutes
 
 Use your own Google account, not your employer's.
 
@@ -108,35 +134,34 @@ Use your own Google account, not your employer's.
 4. Select `setup` → Run → approve permissions. Then select `testLead` → Run: you should get an
    alert email and see a row in the `Leads` tab. Delete that row.
 
-   **If you already have a `Leads` tab with real rows in it**, do not just re-run `setup`. It
-   rewrites the header row in place, so a newly added column shifts every label after it by one
-   while the data underneath stays put — your `Best time` values would end up under
-   `Wants automated`. Instead: right-click column O → Insert 1 column left, so the new empty
-   column sits between `Current method` and `Best time`, and only then run `setup`. Compare the
-   header row against `HEADERS` in `Code.gs` before the next real lead arrives.
-
-   On a fresh sheet there is nothing to do: `setup` writes the full header row itself.
+   **On a sheet that already has rows in it, do not just re-run `setup`.** It rewrites the header
+   row in place, so a changed column set shifts every label while the data underneath stays put.
+   The column set changed substantially in the automation rewrite — start a fresh sheet unless you
+   have data worth migrating by hand.
 5. Deploy → New deployment → **Web app** → Execute as **Me** → Who has access **Anyone** →
    Deploy. Copy the URL ending in `/exec`: this is `NEXT_PUBLIC_LEADS_ENDPOINT`.
 
-Every form on the site asks **what would you like sorted out first?**, so each lead lands with a
-`Wants automated` value: one of the nine catalogue areas, `Something else` (read the message —
-they have described a job in their own words, and it scores highest), or `Not sure yet`. The
-allowed values are the group ids in `src/lib/automations.ts`; if you add a group there, add it to
-`INTEREST_OPTIONS` in `src/lib/lead-options.ts` and to `LABELS.interest` in `Code.gs` too, or the
-answer silently falls back to `Not sure yet`.
+Every form asks **what would you like automated first?**, so each request lands tagged with one of
+the catalogue areas, `Something else` (read the message — they have described a job in their own
+words, and it scores highest), or `Not sure yet`. It also captures organisation size and how many
+hours the job takes now, which is the single best predictor of whether a build pays for itself —
+the scoring in `Code.gs` weights it accordingly.
 
-The URL is visible in the page source; that is expected. The script itself checks every request
-(required fields, Indian mobile format, consent, honeypot, minimum fill time, Turnstile, and at
-most 30 requests an hour site-wide and 3 per phone number).
+Field values must stay in step across three files: `src/lib/request-options.ts`,
+`src/lib/automations.ts` (the group ids) and `LABELS` in `apps-script/Code.gs`. Add an option in
+one and you must add it in the others, or the answer silently falls back to its default.
 
-After editing `Code.gs`: Deploy → Manage deployments → edit → Version: New version. The URL
-stays the same.
+The `/exec` URL is visible in the page source; that is expected. The script itself checks every
+request (required fields, Indian mobile format, consent, honeypot, minimum fill time, Turnstile,
+and at most 30 requests an hour site-wide and 3 per phone number).
+
+After editing `Code.gs`: Deploy → Manage deployments → edit → Version: New version. The URL stays
+the same.
 
 ## 4. Spam protection with Cloudflare Turnstile (free)
 
-1. Cloudflare dashboard → Turnstile → Add widget. Hostnames: your `*.pages.dev` address (and
-   your own domain later). Mode: Managed.
+1. Cloudflare dashboard → Turnstile → Add widget. Hostnames: your `*.pages.dev` address (and your
+   own domain later). Mode: Managed.
 2. Put the **site key** in `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (Cloudflare Pages variables).
 3. Put the **secret key** in the Apps Script property `TURNSTILE_SECRET`.
 
@@ -148,33 +173,35 @@ only the secret is set, every request fails the check.
 1. Push this folder to a GitHub repository.
 2. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → pick the repo.
 3. Build settings: build command `npm run build`, output directory `out`.
-4. Environment variables (Production): all the `NEXT_PUBLIC_*` values from `.env.example`.
-   Set `NEXT_PUBLIC_SITE_URL` to `https://<project>.pages.dev` for now.
+4. Environment variables (Production): all the `NEXT_PUBLIC_*` values from `.env.example`. Set
+   `NEXT_PUBLIC_SITE_URL` to `https://<project>.pages.dev` for now.
 5. Save and deploy. Your site is live at `https://<project>.pages.dev`.
-6. Submit the demo form yourself and check the Sheet row and email arrive.
+6. Submit a form yourself and check the Sheet row and the email arrive.
 
 Every push to your main branch rebuilds the site. Changing a variable needs a new deployment
 (Deployments → Retry), because values are baked in at build time.
 
-Own domain (optional, the only thing that costs money): buy a `.in` domain later, add it under
-the Pages project's Custom domains, then update `NEXT_PUBLIC_SITE_URL` and the Turnstile
-hostnames. Cloudflare Email Routing can forward `hello@yourdomain` to your Gmail for free.
+Own domain (optional, the only thing that costs money): buy a domain later, add it under the Pages
+project's Custom domains, then update `NEXT_PUBLIC_SITE_URL` and the Turnstile hostnames.
+Cloudflare Email Routing can forward `hello@yourdomain` to your Gmail for free.
 
 ## 6. After launch
 
 - Google Search Console: add the site and submit `/sitemap.xml`.
 - Google Business Profile: a service-area business based in Dombivli, address hidden.
 - Tag links you share so the Sheet shows what works, for example
-  `https://<site>/coaching-classes/kalyan?utm_source=whatsapp&utm_campaign=kalyan-visits`.
-- Search traffic takes months. The area pages are most useful as follow-up links after a visit.
-- Add a new area page only when you can really visit that area and have something true to say.
-  Mass-produced near-identical city pages can hurt the whole site in Google.
+  `https://<site>/automation-services/thane?utm_source=whatsapp&utm_campaign=wagle-estate`.
+- Search traffic takes months. The service-area pages are most useful as follow-up links after a
+  visit, not as a source of strangers.
+- Add a new area page only when you can really work there and have something true to say. Mass
+  produced near-identical city pages can hurt the whole site in Google.
 
 ## Security and privacy notes
 
 - No server, no database, no analytics or advertising cookies. Browser session storage keeps the
   campaign tag for the current tab only.
+- The calculator runs entirely in the browser; nothing is sent unless the form is submitted.
 - All checks that matter run in Apps Script; browser checks are only for convenience.
 - Apps Script escapes cell values so form input can't become a spreadsheet formula, and it is
   idempotent on the request ID, so double-clicks never create duplicate rows.
-- Each saved lead stores the consent timestamp.
+- Each saved request stores the consent timestamp.

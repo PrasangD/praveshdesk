@@ -14,7 +14,7 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — admission follow-up system for coaching classes`,
+    default: `${site.name} — automation for companies and institutes`,
     template: `%s | ${site.name}`,
   },
   description: site.shortDescription,
